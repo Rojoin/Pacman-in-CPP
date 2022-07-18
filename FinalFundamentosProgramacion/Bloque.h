@@ -4,10 +4,18 @@ enum class Rotacion { Grado0, Grado90,Grado180,Grado270 };
 
 struct Bloque
 {
-	int x;
-	int y;
+	int x = {0};
+	int y = {0};
 	TipoDeBloque tipoDeBloque;
 	Rotacion estado = Rotacion::Grado0;
 	bool derecha;
 	bool izquierda;
+	void MoverIzquierda() 
+	{
+		x--;
+	}
+	void MoverDerecha()
+	{
+		x++;
+	}
 };
