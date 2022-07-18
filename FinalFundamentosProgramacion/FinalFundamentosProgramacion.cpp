@@ -6,6 +6,7 @@
 #include <conio.h>
 #include <time.h>
 #include "Grilla.h";
+#include "BloqueT.h";
 
 using namespace std;
 
@@ -78,10 +79,14 @@ enum class GameModes { Vacio = -1, Facil, Medio, Dificil, Custom, Historia, Vs }
 GameModes gamemodes;
 MenuController menuController;
 
+void Algo(Bloque& bloque);
+    Bloque prueba(0, 0, TipoDeBloque::Vacio, Rotacion::Grado0, true, true);
+    BloqueT prueba1(10, 10, TipoDeBloque::T, Rotacion::Grado180, false, true);
 int main()
 {
-   
- 
+
+
+    prueba = prueba1;
  
     srand(time(NULL));
    
@@ -100,7 +105,8 @@ int main()
         } while (!_kbhit());
         if (_getch())
         {
-            RandomGrilla();
+            CalcularCursor(22, 2);
+            Algo(prueba1);
         }
     }
 
@@ -123,7 +129,10 @@ int main()
 //		cout << endl;
 //	}
 //}
-
+void Algo(Bloque& bloque)
+{
+    bloque.MoverIzquierda();
+}
 //static CONSOLE_FONT_INFOEX  fontex;
 //fontex.cbSize = sizeof(CONSOLE_FONT_INFOEX);
 //ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);

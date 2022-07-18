@@ -3,11 +3,11 @@
 #include <windows.h>
 #include <conio.h>
 #include <time.h>
-
+#include "Enum.h"
 
 using namespace std;
 
-enum class TipoDeBloque { Vacio, L, J, S, Z, T,O,I};
+
 const int columnas = 10;
 const int filas = 22;
 void CalcularCursor(int x, int y);

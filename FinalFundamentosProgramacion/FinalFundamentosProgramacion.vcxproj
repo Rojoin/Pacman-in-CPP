@@ -143,6 +143,9 @@
     <ClCompile Include="Grilla.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bloque.h" />
+    <ClInclude Include="BloqueT.h" />
+    <ClInclude Include="Enum.h" />
     <ClInclude Include="Grilla.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

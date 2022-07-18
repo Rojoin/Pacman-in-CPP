@@ -1,21 +1,31 @@
 #pragma once
-enum class TipoDeBloque { Vacio, L, J, S, Z, T, O, I };
-enum class Rotacion { Grado0, Grado90,Grado180,Grado270 };
+#include "Grilla.h"
 
-struct Bloque
+
+static struct Bloque
 {
-	int x = {0};
-	int y = {0};
-	TipoDeBloque tipoDeBloque;
-	Rotacion estado = Rotacion::Grado0;
-	bool derecha;
-	bool izquierda;
-	void MoverIzquierda() 
+	int posicionX = {0};
+	int posicionY = {0};
+	TipoDeBloque tipoBloque = {TipoDeBloque::Vacio};
+	Rotacion state = { Rotacion::Grado0 };
+	bool derecha = { true };
+	bool izquierda = { true };
+	Bloque(int x, int y, TipoDeBloque tipoDeBloque, Rotacion estado, bool right, bool left)
 	{
-		x--;
+		this->posicionX = x;
+		this->posicionY = y;
+		this->tipoBloque = tipoDeBloque;
+		this->state = estado;
+		this->derecha = right;
+		this->izquierda = left;
 	}
-	void MoverDerecha()
+	
+	 virtual void MoverIzquierda()
 	{
-		x++;
+		cout << "GoodBye";
+		cout << posicionX;
 	}
+	
+	 void MoverDerecha();
+	
 };
