@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+.vs/FinalFundamentosProgramacion/v16/.suo
+.vs/FinalFundamentosProgramacion/v16/Browse.VC.db
+.vs/FinalFundamentosProgramacion/v16/Browse.VC.db-shm
+.vs/FinalFundamentosProgramacion/v16/Browse.VC.db-wal
+.vs/FinalFundamentosProgramacion/v16/Browse.VC.opendb
+.vs/FinalFundamentosProgramacion/v16/ipch/AutoPCH/942537d55da6171a/FINALFUNDAMENTOSPROGRAMACION.ipch
+.vs/FinalFundamentosProgramacion/v16/ipch/AutoPCH/dd80ccf9769d9f37/GRILLA.ipch
+Debug/FinalFundamentosProgramacion.pdb
