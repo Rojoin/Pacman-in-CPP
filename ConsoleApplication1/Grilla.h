@@ -3,6 +3,7 @@
 #include <windows.h>
 #include "Fantasma.h"
 #include "Globales.h"
+#include <time.h>
 
 using namespace std;
 
@@ -10,36 +11,36 @@ using namespace std;
 struct Grilla {
 
 	TipoDeBloque tablero[filas][columnas];
-	char tableroDibujado[filas][columnas + 1] =
+	char tableroDibujado[filas][columnas ] =
 	{
-		{eSI, pH, pH, pH, pH, pH, pH, pH, pH, pH, pH, pH, pH, pT, pT, pH, pH, pH, pH, pH, pH, pH, pH, pH, pH, pH, pH, eSD},//linea 0
-		{pV, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, pV, pV, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, pV },
-		{pV, oM, eSI, pH, pH, eSD, oM, eSI, pH, pH, pH, eSD, oM, pV, pV, oM, eSI, pH, pH, pH, eSD, oM, eSI, pH, pH, eSD, oM, pV},
-		{pV, pill, pV, space, space, pV, oM, pV, space, space, space, pV, oM, pV, pV, oM, pV, space, space, space, pV, oM, pV, space, space, pV, pill, pV},
-		{pV, oM, eII, pH, pH, eID, oM, eII, pH, pH, pH, eID, oM, eII, eID, oM, eII, pH, pH, pH, eID, oM, eII, pH, pH, eID, oM, pV},
-		{pV, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, pV},//linea 5
-		{pV,oM,eSI,pH,pH,eSD,oM,eSI,eSD,oM,eSI,pH,pH,pH,pH,pH,pH,eSD,oM,eSI,eSD,oM,eSI,pH,pH,eSD,oM,pV},
-		{pV,oM,eII,pH,pH,eID,oM,pV,pV,oM,eII,pH,pH,eSD,eSI,pH,pH,eID,oM,pV,pV,oM,eII,pH,pH,eID,oM,pV},
-		{pV, oM, oM, oM, oM, oM, oM, pV,pV, oM, oM, oM, oM, pV, pV, oM, oM, oM, oM, pV,pV, oM, oM, oM, oM, oM, oM, pV },
-		{eII, pH, pH, pH, pH, eSD, oM,pV,eII,pH, pH, eSD,space,pV,pV,space,eSI,pH,pH,eID,pV,oM,eSI,pH,pH,pH,pH,eID },
-		{space, space, space, space, space, pV, oM,pV,eSI,pH, pH, eID,space,eII,eID,space,eII,pH,pH,eSD,pV,oM,pV, space, space, space, space },
-		{space, space, space, space, space, pV, oM,pV,pV,space, space ,space,space,space,space,space,space,space,space,pV,pV,oM,pV, space, space, space, space },
-		{pH, pH, pH, pH, pH, eID, oM,eII,eID,space, eSI, pH,pH,entrance,entrance,pH,pH,eSD,space,eII,eID,oM,eII,pH,pH,pH,pH,pH },
-		{space, space, space, space, space,space,oM,space,space,space,pV,space,space,space,space,space,space,pV,space,space,space,oM,space, space, space, space, space,space},
-		{pH, pH, pH, pH, pH, eSD, oM,eSI,eSD,space, eII, pH,pH,pH,pH,pH,pH,eID,space,eSI,eSD,oM,eSI,pH,pH,pH,pH,pH },
-		{space, space, space, space, space, pV, oM,pV,pV,space, space, space,space,space,space,space,space,space,space,pV,pV,oM,pV, space, space, space, space },
-		{eSI, pH, pH, pH, pH, eID, oM,eII,eID,space, eSI, pH,pH,pH,pH,pH,pH,eSD,space,eII,eID,oM,eII,pH,pH,pH,pH,eSD },
-		{pV,oM,oM,oM,oM,oM,oM,oM,oM,oM,eII,pH,pH,eSD,eSI,pH,pH,eID,oM,oM,oM,oM,oM,oM,oM,oM,oM,pV},
-		{pV,oM, eSI, pH, pH, pH, pH, pH,eSD, oM, oM, oM, oM, pV, pV, oM, oM, oM, oM, eSI, pH, pH, pH, pH, pH,eSD, oM, pV },
-		{pV,oM, eII, pH, eSD, space, space, space,eII, pH, pH, eSD, oM, pV, pV, oM, eSI, pH, pH, eID, space, space, space, eSI, pH,eID, oM, pV },
-		{pV, pill, oM, oM, eII, pH, pH, pH, pH, pH, pH, eID, oM, eII, eID,oM, eII, pH, pH, pH, pH, pH, pH, eID, oM, oM, pill, pV},
-		{eII, pH,eSD, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, oM, eSI, pH, eID},
-		{eSI, pH,eID, oM, eSI, pH, pH, pH, eSD, oM, eSI, pH, pH, pH, pH, pH, pH,eSD,  oM,  eSI, pH, pH, pH, eSD, oM, eII, pH, eSD},
-		{pV, oM, oM, oM, pV, space, space, space,  pV,oM,eII,pH,pH,eSD,eSI,pH,pH,eID,  oM, pV, space, space, space, pV, oM, oM, oM, pV},
-		{pV, oM, eSI, pH, eID, space, space, space, pV, oM, oM, oM, oM, pV, pV, oM, oM, oM, oM,  pV, space, space, space, eII, pH, eSD, oM, pV},
-		{pV, oM, eII, pH, pH, pH, pH, pH, eID,  oM,eSI, eSD, oM, eII, eID, oM, eSI, eSD, oM, eII, pH, pH, pH, pH, pH, eID, oM, pV},
-		{pV, oM, oM, oM, oM, oM, oM, oM, oM, oM, pV, pV, oM, oM, oM, oM, pV, pV, oM, oM, oM, oM, oM, oM, oM, oM, oM, pV},
-		{eII, pH, pH, pH, pH, pH, pH, pH, pH, pH, pTIn, pTIn, pH, pH, pH, pH, pTIn, pTIn, pH, pH, pH, pH, pH, pH, pH, pH, pH, eID}
+		{eSI, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pTT, pTT, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, eSD}, //linea0
+		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea1
+		{pVV, oMM, eSI, pHH, pHH, eSD, oMM, eSI, pHH, pHH, pHH, eSD, oMM, pVV, pVV, oMM, eSI, pHH, pHH, pHH, eSD, oMM, eSI, pHH, pHH, eSD, oMM, pVV}, //linea2
+		{pVV, pil, pVV, spa, spa, pVV, oMM, pVV, spa, spa, spa, pVV, oMM, pVV, pVV, oMM, pVV, spa, spa, spa, pVV, oMM, pVV, spa, spa, pVV, pil, pVV}, //linea3
+		{pVV, oMM, eII, pHH, pHH, eID, oMM, eII, pHH, pHH, pHH, eID, oMM, eII, eID, oMM, eII, pHH, pHH, pHH, eID, oMM, eII, pHH, pHH, eID, oMM, pVV}, //linea4
+		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea5
+		{pVV, oMM, eSI, pHH, pHH, eSD, oMM, eSI, eSD, oMM, eSI, pHH, pHH, pHH, pHH, pHH, pHH, eSD, oMM, eSI, eSD, oMM, eSI, pHH, pHH, eSD, oMM, pVV}, //linea6
+		{pVV, oMM, eII, pHH, pHH, eID, oMM, pVV, pVV, oMM, eII, pHH, pHH, eSD, eSI, pHH, pHH, eID, oMM, pVV, pVV, oMM, eII, pHH, pHH, eID, oMM, pVV}, //linea7
+		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea8
+		{eII, pHH, pHH, pHH, pHH, eSD, oMM, pVV, eII, pHH, pHH, eSD, spa, pVV, pVV, spa, eSI, pHH, pHH, eID, pVV, oMM, eSI, pHH, pHH, pHH, pHH, eID}, //linea9
+		{spa, spa, spa, spa, spa, pVV, oMM, pVV, eSI, pHH, pHH, eID, spa, eII, eID, spa, eII, pHH, pHH, eSD, pVV, oMM, pVV, spa, spa, spa, spa, spa}, //linea10
+		{spa, spa, spa, spa, spa, pVV, oMM, pVV, pVV, spa, spa, spa, spa, spa, spa, spa, spa, spa, spa, pVV, pVV, oMM, pVV, spa, spa, spa, spa, spa}, //linea11
+		{pHH, pHH, pHH, pHH, pHH, eID, oMM, eII, eID, spa, eSI, pHH, pHH, ent, ent, pHH, pHH, eSD, spa, eII, eID, oMM, eII, pHH, pHH, pHH, pHH, pHH}, //linea12
+		{spa, spa, spa, spa, spa, spa, oMM, spa, spa, spa, pVV, spa, spa, spa, spa, spa, spa, pVV, spa, spa, spa, oMM, spa, spa, spa, spa, spa, spa}, //linea13
+		{pHH, pHH, pHH, pHH, pHH, eSD, oMM, eSI, eSD, spa, eII, pHH, pHH, pHH, pHH, pHH, pHH, eID, spa, eSI, eSD, oMM, eSI, pHH, pHH, pHH, pHH, pHH}, //linea14
+		{spa, spa, spa, spa, spa, pVV, oMM, pVV, pVV, spa, spa, spa, spa, spa, spa, spa, spa, spa, spa, pVV, pVV, oMM, pVV, spa, spa, spa, spa, spa}, //linea15
+		{eSI, pHH, pHH, pHH, pHH, eID, oMM, eII, eID, spa, eSI, pHH, pHH, pHH, pHH, pHH, pHH, eSD, spa, eII, eID, oMM, eII, pHH, pHH, pHH, pHH, eSD}, //linea16
+		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, eII, pHH, pHH, eSD, eSI, pHH, pHH, eID, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea17
+		{pVV, oMM, eSI, pHH, pHH, pHH, pHH, pHH, eSD, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, eSI, pHH, pHH, pHH, pHH, pHH, eSD, oMM, pVV}, //linea18
+		{pVV, oMM, eII, pHH, eSD, spa, spa, spa, eII, pHH, pHH, eSD, oMM, pVV, pVV, oMM, eSI, pHH, pHH, eID, spa, spa, spa, eSI, pHH, eID, oMM, pVV}, //linea19
+		{pVV, pil, oMM, oMM, eII, pHH, pHH, pHH, pHH, pHH, pHH, eID, oMM, eII, eID, oMM, eII, pHH, pHH, pHH, pHH, pHH, pHH, eID, oMM, oMM, pil, pVV}, //linea20
+		{eII, pHH, eSD, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, eSI, pHH, eID}, //linea21
+		{eSI, pHH, eID, oMM, eSI, pHH, pHH, pHH, eSD, oMM, eSI, pHH, pHH, pHH, pHH, pHH, pHH, eSD, oMM, eSI, pHH, pHH, pHH, eSD, oMM, eII, pHH, eSD}, //linea22
+		{pVV, oMM, oMM, oMM, pVV, spa, spa, spa, pVV, oMM, eII, pHH, pHH, eSD, eSI, pHH, pHH, eID, oMM, pVV, spa, spa, spa, pVV, oMM, oMM, oMM, pVV}, //linea23
+		{pVV, oMM, eSI, pHH, eID, spa, spa, spa, pVV, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, pVV, spa, spa, spa, eII, pHH, eSD, oMM, pVV}, //linea24
+		{pVV, oMM, eII, pHH, pHH, pHH, pHH, pHH, eID, oMM, eSI, eSD, oMM, eII, eID, oMM, eSI, eSD, oMM, eII, pHH, pHH, pHH, pHH, pHH, eID, oMM, pVV}, //linea25
+		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea26
+		{eII, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pTI, pTI, pHH, pHH, pHH, pHH, pTI, pTI, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, eID}  //linea27
 	};
 	void GrillaReset()
 	{
@@ -50,33 +51,31 @@ struct Grilla {
 			{
 				switch (tableroDibujado[fil][col])
 				{
-				case pV:
-				case pH:
+				case pVV:
+				case pHH:
 				case eII:
 				case eSI:
 				case eID:
 				case eSD:
-				case pTIn:
-				case pT:
 				case pTI:
-				case pTD:
-				case pX:
+				case pTT:
+
 					tablero[fil][col] = TipoDeBloque::Dibujo;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9);
 					break;
-				case entrance:
+				case ent:
 					tablero[fil][col] = TipoDeBloque::Dibujo;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 					break;
-				case oM:
+				case oMM:
 					tablero[fil][col] = TipoDeBloque::Cocos;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 					break;
-				case pill:
+				case pil:
 					tablero[fil][col] = TipoDeBloque::Pildora;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
 					break;
-				case space:
+				case spa:
 					tablero[fil][col] = TipoDeBloque::Vacio;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
@@ -96,38 +95,35 @@ struct Grilla {
 
 			for (int fil = 0; fil < filas; fil++)
 			{
-				for (int col = 0; col < columnas - 1; col++)
+				for (int col = 0; col < columnas; col++)
 				{
 					MoverCursor(col, fil);
 					switch (tableroDibujado[fil][col])
 					{
-					case pV:
-					case pH:
+					case pVV:
+					case pHH:
 					case eII:
 					case eSI:
 					case eID:
 					case eSD:
-					case pTIn:
-					case pT:
 					case pTI:
-					case pTD:
-					case pX:
+					case pTT:
 						tablero[fil][col] = TipoDeBloque::Dibujo;
 						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9);
 						break;
-					case entrance:
+					case ent:
 						tablero[fil][col] = TipoDeBloque::Dibujo;
 						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 						break;
-					case oM:
+					case oMM:
 						tablero[fil][col] = TipoDeBloque::Cocos;
 						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 						break;
-					case pill:
+					case pil:
 						tablero[fil][col] = TipoDeBloque::Pildora;
 						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
 						break;
-					case space:
+					case spa:
 						tablero[fil][col] = TipoDeBloque::Vacio;
 						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
@@ -164,34 +160,31 @@ struct Grilla {
 
 		for (int fil = 0; fil < filas; fil++)
 		{
-			for (int col = 0; col < columnas - 1; col++)
+			for (int col = 0; col < columnas ; col++)
 			{
 				MoverCursor(col, fil);
 				switch (tableroDibujado[fil][col])
 				{
-				case pV:
-				case pH:
+				case pVV:
+				case pHH:
 				case eII:
 				case eSI:
 				case eID:
 				case eSD:
-				case pTIn:
-				case pT:
 				case pTI:
-				case pTD:
-				case pX:
+				case pTT:
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9);
 					break;
-				case entrance:
+				case ent:
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 					break;
-				case oM:
+				case oMM:
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 					break;
-				case pill:
+				case pil:
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
 					break;
-				case space:
+				case spa:
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
 				default:
@@ -223,19 +216,88 @@ struct Grilla {
 
 		for (int fil = 0; fil < filas; fil++)
 		{
-			for (int col = 0; col < columnas - 1; col++)
+			for (int col = 0; col < columnas ; col++)
 			{
 				if (tablero[fil][col] == TipoDeBloque::Vacio)
 				{
-					tableroDibujado[fil][col] = space;
+					tableroDibujado[fil][col] = spa;
 				}
 				
 				
 			}
 		}
 	};
+	void MoverFantasma(Fantasma& fantasma)
+	{
+		bool aux = false;
+		Direccion random = (Direccion)(rand() % 4);
+		switch (random)
+		{
+		case Direccion::Derecha:
+			if (tablero[fantasma.y][fantasma.x + 1] != TipoDeBloque::Dibujo)
+			{
+			fantasma.direccionActual = Direccion::Derecha;
+			aux = true;
+			}
+			else if (fantasma.direccionAnterior == Direccion::Izquierda)
+			{
+			fantasma.direccionActual = Direccion::Izquierda;
+			aux = true;
+			}
+			break;
+		case Direccion::Izquierda:
+			if (tablero[fantasma.y][fantasma.x - 1] != TipoDeBloque::Dibujo)
 
+			{
+			fantasma.direccionActual = Direccion::Izquierda;
+			aux = true;
+			}
+			else if (fantasma.direccionAnterior == Direccion::Derecha)
+			{
+				fantasma.direccionActual = Direccion::Derecha;
+				aux = true;
+			}
+			break;
+		case Direccion::Arriba:
+			if (tablero[fantasma.y - 1][fantasma.x] != TipoDeBloque::Dibujo)
 
+			{
+			fantasma.direccionActual = Direccion::Arriba;
+			aux = true; 
+			}
+			else if (fantasma.direccionAnterior == Direccion::Abajo)
+			{
+				fantasma.direccionActual = Direccion::Arriba;
+				aux = true;
+			}
+			break;
+		case Direccion::Abajo:
+			if (tablero[fantasma.y + 1][fantasma.x] != TipoDeBloque::Dibujo)
+			{
+			fantasma.direccionActual = Direccion::Abajo;
+			aux = true;
+			
+
+			}
+			else if (fantasma.direccionAnterior == Direccion::Arriba)
+			{
+				fantasma.direccionActual = Direccion::Abajo;
+				aux = true;
+			}
+			break;
+		}
+		if (aux)
+		{
+			fantasma.direccionAnterior = fantasma.direccionActual;
+		fantasma.MovimientoFantasmal();
+
+		}
+		else
+		{
+			MoverFantasma(fantasma);
+		}
+		
+	}
 
 };
 

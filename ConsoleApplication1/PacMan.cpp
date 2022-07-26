@@ -3,78 +3,170 @@
 #include "Fantasma.h"
 
 
-void Pacman::MoverAbajo(Grilla grilla)
+void Pacman::MoverAbajo(Grilla grilla, int& frames)
 {
-	
 	if (grilla.tablero[y + 1][x] != TipoDeBloque::Dibujo)
 	{
+
 		y++;
+		GuardarDireccionAnterior();
+		if (direccionBuffer != direccionActual)
+		{
+			GetBuffer();
+			frames = 125;
+		}
+		else
+		{
+			frames = 150;
+		}
 	}
-
-}
-void Pacman::MoverArriba(Grilla grilla)
-{
-	if (grilla.tablero[y -1][x] != TipoDeBloque::Dibujo)
+	else
 	{
-		y--;
+		frames = 150;
+			SettearDireccionAnterior();
+
+		
 	}
-	
+
 }
-void Pacman::MoverDerecha(Grilla grilla)
+void Pacman::MoverArriba(Grilla grilla, int& frames)
 {
 
-	if (x >= columnas-2)
+	if (grilla.tablero[y - 1][x] != TipoDeBloque::Dibujo)
+	{
+
+		y--;
+		GuardarDireccionAnterior();
+		if (direccionBuffer != direccionActual)
+		{
+			GetBuffer();
+			frames = 125;
+		}
+		else
+		{
+			frames = 150;
+		}
+	}
+	else
+	{
+		frames = 150;
+			SettearDireccionAnterior();
+
+	}
+
+}
+void Pacman::MoverDerecha(Grilla grilla, int& frames)
+{
+
+	
+    if (x >= columnas - 1)
 	{
 		x = 0;
 	}
-	else if (grilla.tablero[y][x+ 1] != TipoDeBloque::Dibujo)
+	else if (grilla.tablero[y][x + 1] != TipoDeBloque::Dibujo)
 	{
+		frames = 150;
 		x++;
+		GuardarDireccionAnterior();
+		if (direccionBuffer != direccionActual)
+		{
+			GetBuffer();
+			frames = 125;
+		}
+		else
+		{
+			frames = 150;
+		}
 	}
-	
+	else
+	{
+		SettearDireccionAnterior();
+		frames = 150;
+	}
+
 }
 
-void Pacman::MoverIzquierda(Grilla grilla)
+void Pacman::MoverIzquierda(Grilla grilla, int& frames)
 {
 
+	
 	if (x <= 0)
 	{
-		x = columnas-2;
+		x = columnas - 1;
 
 	}
-	else if (grilla.tablero[y][x -1] != TipoDeBloque::Dibujo)
+	else if (grilla.tablero[y][x - 1] != TipoDeBloque::Dibujo)
 	{
 		x--;
+		GuardarDireccionAnterior();
+		
+		if (direccionBuffer != direccionActual)
+		{
+			GetBuffer();
+			frames = 125;
+		}
+		else
+		{
+			frames = 150;
+		}
+	}
+	else
+	{
+			SettearDireccionAnterior();
+			frames = 150;
 	}
 }
-void Pacman::DibujarPacMan()
+void Pacman::DibujarPacMan(bool& aux)
 {
 	if (estado == EstadoPacMan::Normal)
 	{
-		MoverCursor(x, y);
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
-		switch (direccionActual)
+			MoverCursor(x, y);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+		if (!aux)
 		{
-		case DireccionPacMan::Izquierda:
-			cuerpoActual = cuerpo[(int)DireccionPacMan::Izquierda];
-			break;
-		case DireccionPacMan::Derecha:
-			cuerpoActual = cuerpo[(int)DireccionPacMan::Derecha];
-			break;
-		case DireccionPacMan::Arriba:
-			cuerpoActual = cuerpo[(int)DireccionPacMan::Arriba];
-			break;
-		case DireccionPacMan::Abajo:
-			cuerpoActual = cuerpo[(int)DireccionPacMan::Abajo];
-			break;
+
+			switch (direccionAnterior)
+			{
+			case Direccion::Izquierda:
+				cuerpoActual = cuerpo[(int)Direccion::Izquierda];
+				break;
+			case Direccion::Derecha:
+				cuerpoActual = cuerpo[(int)Direccion::Derecha];
+				break;
+			case Direccion::Arriba:
+				cuerpoActual = cuerpo[(int)Direccion::Arriba];
+				break;
+			case Direccion::Abajo:
+				cuerpoActual = cuerpo[(int)Direccion::Abajo];
+				break;
+			}
+			aux = true;
+		}
+
+		else if (aux)
+		{
+			switch (direccionAnterior)
+			{
+			case Direccion::Derecha:
+			case Direccion::Izquierda:
+			cuerpoActual = cuerpo[4];
+
+				break;
+			case Direccion::Arriba:
+			case Direccion::Abajo:
+				cuerpoActual = cuerpo[5];
+				break;
+			}
+			aux = false;
 		}
 		cout << cuerpoActual;
+
 	}
 }
 void Pacman::DesDibujar()
 {
 	MoverCursor(x, y);
-	cout << space;
+	cout << spa;
 }
 void Pacman::Colision(Grilla& grilla, Fantasma fantasma[], bool& GameOver)
 {
@@ -87,7 +179,7 @@ void Pacman::Colision(Grilla& grilla, Fantasma fantasma[], bool& GameOver)
 		grilla.tablero[y][x] = TipoDeBloque::Vacio;
 		break;
 	case TipoDeBloque::Pildora:
-		puntuacion+= 10;
+		puntuacion += 10;
 		for (int i = 0; i < maximoFantasmas; i++)
 		{
 			fantasma->estado = EstadoFantasma::Debil;
@@ -110,7 +202,7 @@ void Pacman::Colision(Grilla& grilla, Fantasma fantasma[], bool& GameOver)
 				fantasma[i].y = 1;
 				puntuacion += 100;
 			}
-			else if(fantasma[i].estado == EstadoFantasma::Normal )
+			else if (fantasma[i].estado == EstadoFantasma::Normal)
 			{
 				SecuenciaMuerte(GameOver);
 			}
@@ -125,3 +217,20 @@ void Pacman::SecuenciaMuerte(bool& GameOver)
 		GameOver = true;
 	}
 }
+void Pacman::GuardarDireccionAnterior()
+{
+	direccionAnterior = direccionActual;
+}
+void Pacman::SettearDireccionAnterior()
+{
+	 direccionActual = direccionAnterior;
+}
+void Pacman::SetBuffer() 
+{
+	direccionBuffer = direccionActual;
+}
+void Pacman::GetBuffer()
+{
+	direccionActual=direccionBuffer;
+}
+

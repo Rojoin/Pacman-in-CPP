@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleApplication1.cpp" />
+    <ClCompile Include="Fantasma.cpp" />
     <ClCompile Include="Globales.cpp" />
     <ClCompile Include="PacMan.cpp" />
   </ItemGroup>
