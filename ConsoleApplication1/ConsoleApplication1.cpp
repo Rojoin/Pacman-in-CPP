@@ -88,6 +88,7 @@ int main()
 		}
 		std::cout << std::endl;
 	}*/
+	srand(time(0));
 	GameLogic();
 
 }

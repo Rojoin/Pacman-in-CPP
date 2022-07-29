@@ -3,7 +3,7 @@
 #include <Windows.h>
 const int filas = 28;
 const int columnas = 28;
-const int maximoFantasmas = 3;
+const int maximoFantasmas =3;
 
 enum class TipoDeBloque { Vacio, Cocos, Pildora, Fruta, Dibujo };
 enum class EstadoFantasma { Normal, Debil, Muerto};

@@ -7,6 +7,7 @@ struct Fantasma
 	int y;
 	int objetivoX;
 	int objetivoY;
+	bool direccionesDisponibles[4];
 	EstadoFantasma estado = { EstadoFantasma::Normal };
 	Direccion direccionActual;
 	Direccion direccionAnterior;

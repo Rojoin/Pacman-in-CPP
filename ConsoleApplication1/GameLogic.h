@@ -9,6 +9,7 @@
 Grilla grilla;
 Pacman pacman;
 Fantasma fantasma[3]{ {4,1},{2,1},{3,1} };
+//Fantasma fantasma[1]{ {4,1} };
 
 void FuenteDeConsola(int ancho, int alto)
 {
@@ -16,9 +17,9 @@ void FuenteDeConsola(int ancho, int alto)
 	cfi.cbSize = sizeof(cfi);
 	cfi.dwFontSize.X = 24;
 	cfi.dwFontSize.Y = 24;
-	cfi.nFont =4;
+	cfi.nFont = 4;
 	cfi.FontFamily =
-	cfi.FontFamily = FF_DONTCARE;
+		cfi.FontFamily = FF_DONTCARE;
 	cfi.FontWeight = FW_NORMAL;
 
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
@@ -87,9 +88,9 @@ void GameLogic()
 
 	int frame = 150;
 
-		bool gameover= false;
+	bool gameover = false;
 
-		grilla.Iniciar(pacman.x, pacman.y, fantasma);
+	grilla.Iniciar(pacman.x, pacman.y, fantasma);
 
 	do
 	{
@@ -97,15 +98,22 @@ void GameLogic()
 		{
 			if (clock() % frame == 0)
 			{
+				for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+				{
+
+					grilla.MoverFantasma(fantasma[fantas]);
+				grilla.DibujarFantasma(fantasma[fantas]);
+				}
 				MoverCursor(30, 0);
 				cout << pacman.puntuacion;
 				grilla.Dibujar(pacman.x, pacman.y, fantasma);
 				grilla.Chekear();
 				pacman.DesDibujar();
+
 				switch (pacman.direccionActual)
 				{
 				case Direccion::Arriba:
-					pacman.MoverArriba(grilla,frame);
+					pacman.MoverArriba(grilla, frame);
 					break;
 				case Direccion::Abajo:
 					pacman.MoverAbajo(grilla, frame);
@@ -117,14 +125,9 @@ void GameLogic()
 					pacman.MoverIzquierda(grilla, frame);
 					break;
 				}
-				for (int fantas = 0; fantas < maximoFantasmas; fantas++)
-				{
 
-				grilla.MoverFantasma(fantasma[fantas]);
-				}
-				pacman.Colision(grilla,fantasma,gameover);
+				pacman.Colision(grilla, fantasma, gameover);
 				pacman.DibujarPacMan(midAnimation);
-
 			}
 
 
@@ -150,7 +153,6 @@ void GameLogic()
 		case 'a':
 		{
 			pacman.direccionActual = Direccion::Izquierda;
-	
 		}
 		break;
 		default:

@@ -135,7 +135,6 @@ struct Grilla {
 					{
 						if (fantasma[i].x == col && fantasma[i].y == fil)
 						{
-							std::cout << fantasma[i].cuerpoActual;
 							posicionOcupada = true;
 						}
 					}
@@ -191,11 +190,10 @@ struct Grilla {
 					break;
 				}
 				bool posicionOcupada = false;
-				for (int i = 0; i < maximoFantasmas; i++)
+				for (int fantas = 0; fantas < maximoFantasmas; fantas++)
 				{
-					if (fantasma[i].x == col && fantasma[i].y == fil)
+					if (fantasma[fantas].x == col && fantasma[fantas].y == fil)
 					{
-						std::cout << fantasma[i].cuerpoActual;
 						posicionOcupada = true;
 					}
 				}
@@ -204,7 +202,8 @@ struct Grilla {
 
 					posicionOcupada = true;
 				}
-				else if (!posicionOcupada)
+
+				if (!posicionOcupada)
 				{
 					std::cout << tableroDibujado[fil][col];
 				}
@@ -227,77 +226,117 @@ struct Grilla {
 			}
 		}
 	};
+	void DesDibujarFantasma(Fantasma& fantasma)
+	{
+		MoverCursor(fantasma.x, fantasma.y);
+		std::cout << spa;
+	}
+	void DibujarFantasma(Fantasma& fantasma)
+	{
+		MoverCursor(fantasma.x, fantasma.y);
+		std::cout << fantasma.cuerpoActual;
+	}
 	void MoverFantasma(Fantasma& fantasma)
 	{
-		bool aux = false;
 		Direccion random = (Direccion)(rand() % 4);
 		switch (random)
 		{
 		case Direccion::Derecha:
 			if (tablero[fantasma.y][fantasma.x + 1] != TipoDeBloque::Dibujo)
 			{
-			fantasma.direccionActual = Direccion::Derecha;
-			aux = true;
+				fantasma.direccionActual = Direccion::Derecha;
+				if (fantasma.direccionAnterior == Direccion::Izquierda)
+				{
+					fantasma.direccionActual = fantasma.direccionAnterior;
+				}
 			}
-			else if (fantasma.direccionAnterior == Direccion::Izquierda)
-			{
-			fantasma.direccionActual = Direccion::Izquierda;
-			aux = true;
-			}
+
+
 			break;
 		case Direccion::Izquierda:
 			if (tablero[fantasma.y][fantasma.x - 1] != TipoDeBloque::Dibujo)
 
 			{
-			fantasma.direccionActual = Direccion::Izquierda;
-			aux = true;
+				fantasma.direccionActual = Direccion::Izquierda;
+
+				if (fantasma.direccionAnterior == Direccion::Derecha)
+				{
+					fantasma.direccionActual = fantasma.direccionAnterior;
+				}
 			}
-			else if (fantasma.direccionAnterior == Direccion::Derecha)
-			{
-				fantasma.direccionActual = Direccion::Derecha;
-				aux = true;
-			}
+
 			break;
 		case Direccion::Arriba:
 			if (tablero[fantasma.y - 1][fantasma.x] != TipoDeBloque::Dibujo)
 
 			{
-			fantasma.direccionActual = Direccion::Arriba;
-			aux = true; 
-			}
-			else if (fantasma.direccionAnterior == Direccion::Abajo)
-			{
 				fantasma.direccionActual = Direccion::Arriba;
-				aux = true;
+				if (fantasma.direccionAnterior == Direccion::Abajo)
+				{
+					fantasma.direccionActual = fantasma.direccionAnterior;
+				}
 			}
+
 			break;
 		case Direccion::Abajo:
 			if (tablero[fantasma.y + 1][fantasma.x] != TipoDeBloque::Dibujo)
 			{
-			fantasma.direccionActual = Direccion::Abajo;
-			aux = true;
-			
-
-			}
-			else if (fantasma.direccionAnterior == Direccion::Arriba)
-			{
 				fantasma.direccionActual = Direccion::Abajo;
-				aux = true;
+				if (fantasma.direccionAnterior == Direccion::Arriba)
+				{
+					fantasma.direccionActual = fantasma.direccionAnterior;
+				}
+			}
+				break;
+
+		}
+			if (ChekearPosicionFantasma(fantasma))
+			{
+				fantasma.direccionAnterior = fantasma.direccionActual;
+				fantasma.MovimientoFantasmal();
+				MoverCursor(40, 1);
+				cout << "X: " << fantasma.x << "Y: " << fantasma.y;
+			}
+			else
+			{
+				MoverFantasma(fantasma);
+			}
+	}
+		bool ChekearPosicionFantasma(Fantasma & fantasma)
+		{
+
+		switch (fantasma.direccionActual)
+		{
+		case Direccion::Derecha:
+			if (tablero[fantasma.y][fantasma.x + 1] != TipoDeBloque::Dibujo)
+			{
+				return true;
+			}
+		
+			break;
+		case Direccion::Izquierda:
+			if (tablero[fantasma.y][fantasma.x - 1] != TipoDeBloque::Dibujo)
+
+			{
+				return true;
+			}
+			
+			break;
+		case Direccion::Arriba:
+			if (tablero[fantasma.y - 1][fantasma.x] != TipoDeBloque::Dibujo)
+			{
+				return true;
+			}
+			break;
+		
+		case Direccion::Abajo:
+			if (tablero[fantasma.y + 1][fantasma.x] != TipoDeBloque::Dibujo)
+			{
+				return true;
 			}
 			break;
 		}
-		if (aux)
-		{
-			fantasma.direccionAnterior = fantasma.direccionActual;
-		fantasma.MovimientoFantasmal();
-
-		}
-		else
-		{
-			MoverFantasma(fantasma);
-		}
-		
+		return false;
 	}
-
 };
 
