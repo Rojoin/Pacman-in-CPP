@@ -8,7 +8,7 @@
 
 Grilla grilla;
 Pacman pacman;
-Fantasma fantasma[3]{ {4,1},{2,1},{3,1} };
+Fantasma fantasma[4]{ {4,1,EstadoFantasma::Normal},{2,1,EstadoFantasma::Normal},{3,1,EstadoFantasma::Normal},{13,13,EstadoFantasma::Encerrado} };
 //Fantasma fantasma[1]{ {4,1} };
 
 void FuenteDeConsola(int ancho, int alto)
@@ -60,8 +60,35 @@ void TamañoYScroller()
 	HWND consoleWindow = GetConsoleWindow();
 	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
 }
-
-
+void ResetAfterDead(Fantasma fantasma[], Pacman& pacman)
+{
+	pacman.ResetearPosicion();
+	for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+	{
+		fantasma[fantas].ResetearPosicion(fantas);
+	}
+}
+void Colisiones(Fantasma fantasma[],Pacman& pacman,Grilla& grilla)
+{
+	pacman.Colision(grilla, fantasma);
+	for (int i = 0; i < maximoFantasmas; i++)
+	{
+		if (pacman.x == fantasma[i].x && pacman.y == fantasma[i].y)
+		{
+			if (fantasma[i].estado == EstadoFantasma::Debil)
+			{
+				fantasma[i].estado = EstadoFantasma::Encerrado;
+				fantasma[i].x = fantasma[i].xCaja;
+				fantasma[i].y = fantasma[i].yCaja;
+				pacman.puntuacion += 100;
+			}
+			else if (fantasma[i].estado == EstadoFantasma::Normal)
+			{
+				ResetAfterDead(fantasma, pacman);
+			}
+		}
+	}
+}
 void GameLogic()
 {
 	/*	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
@@ -91,21 +118,21 @@ void GameLogic()
 	bool gameover = false;
 
 	grilla.Iniciar(pacman.x, pacman.y, fantasma);
-
-	do
+	
+	int tiempo = clock();
+	while (!gameover)
 	{
 		do
 		{
-			if (clock() % frame == 0)
-			{
-				for (int fantas = 0; fantas < maximoFantasmas; fantas++)
-				{
+			
 
-					grilla.MoverFantasma(fantasma[fantas]);
-				grilla.DibujarFantasma(fantasma[fantas]);
-				}
-				MoverCursor(30, 0);
-				cout << pacman.puntuacion;
+			
+			if (tiempo % 2000 == 0)
+			{
+				Colisiones(fantasma, pacman,grilla);
+				
+				
+				pacman.PuntuacionActual();
 				grilla.Dibujar(pacman.x, pacman.y, fantasma);
 				grilla.Chekear();
 				pacman.DesDibujar();
@@ -125,15 +152,37 @@ void GameLogic()
 					pacman.MoverIzquierda(grilla, frame);
 					break;
 				}
-
-				pacman.Colision(grilla, fantasma, gameover);
+				pacman.DesDibujar();
+				Colisiones(fantasma, pacman,grilla);
 				pacman.DibujarPacMan(midAnimation);
 			}
+			if (tiempo%3000 == 0)
+			{
+				for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+				{
+					if (fantasma[fantas].estado == EstadoFantasma::Encerrado)
+					{
+						grilla.MoverFantasmaEncerrado(fantasma[fantas]);
+					}
+					else
+					{
+						grilla.MoverFantasma(fantasma[fantas]);
+					}
+					grilla.DibujarFantasma(fantasma[fantas]);
+				}
+				grilla.Dibujar(pacman.x, pacman.y, fantasma);
+				Colisiones(fantasma, pacman, grilla);
+			}
 
+			tiempo++;
+			if (tiempo == 400000)
+			{
+				tiempo = 0;
+			}
+		} while (!_kbhit()&&!gameover);
+		if (!gameover)
+		{
 
-
-
-		} while (!_kbhit());
 		pacman.GuardarDireccionAnterior();
 		switch (_getch())
 		{
@@ -159,6 +208,7 @@ void GameLogic()
 			break;
 		}
 		pacman.SetBuffer();
+		}
 
-	} while (!gameover);
+	};
 }

@@ -32,3 +32,19 @@ void Fantasma::MovimientoFantasmal()
 		break;
 	}
 }
+void Fantasma::ResetearPosicion(int primero)
+{
+	if (primero == 0)
+	{
+		x = xDefault;
+		y = yDefault;
+		estado = EstadoFantasma::Normal;
+	}
+	else if (primero>0)
+	
+	{
+		x = xCaja;
+		y = yCaja;
+		estado = EstadoFantasma::Encerrado;
+	}
+}

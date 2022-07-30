@@ -11,7 +11,7 @@ using namespace std;
 struct Grilla {
 
 	TipoDeBloque tablero[filas][columnas];
-	char tableroDibujado[filas][columnas ] =
+	char tableroDibujado[filas][columnas] =
 	{
 		{eSI, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pTT, pTT, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, eSD}, //linea0
 		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea1
@@ -159,7 +159,7 @@ struct Grilla {
 
 		for (int fil = 0; fil < filas; fil++)
 		{
-			for (int col = 0; col < columnas ; col++)
+			for (int col = 0; col < columnas; col++)
 			{
 				MoverCursor(col, fil);
 				switch (tableroDibujado[fil][col])
@@ -215,14 +215,14 @@ struct Grilla {
 
 		for (int fil = 0; fil < filas; fil++)
 		{
-			for (int col = 0; col < columnas ; col++)
+			for (int col = 0; col < columnas; col++)
 			{
 				if (tablero[fil][col] == TipoDeBloque::Vacio)
 				{
 					tableroDibujado[fil][col] = spa;
 				}
-				
-				
+
+
 			}
 		}
 	};
@@ -238,72 +238,102 @@ struct Grilla {
 	}
 	void MoverFantasma(Fantasma& fantasma)
 	{
+		
+		
 		Direccion random = (Direccion)(rand() % 4);
-		switch (random)
-		{
-		case Direccion::Derecha:
-			if (tablero[fantasma.y][fantasma.x + 1] != TipoDeBloque::Dibujo)
+			switch (random)
 			{
-				fantasma.direccionActual = Direccion::Derecha;
-				if (fantasma.direccionAnterior == Direccion::Izquierda)
+			case Direccion::Derecha:
+				if (tablero[fantasma.y][fantasma.x + 1] != TipoDeBloque::Dibujo)
 				{
-					fantasma.direccionActual = fantasma.direccionAnterior;
+					fantasma.direccionActual = Direccion::Derecha;
+					if (fantasma.direccionAnterior == Direccion::Izquierda)
+					{
+						fantasma.direccionActual = fantasma.direccionAnterior;
+					}
 				}
-			}
 
 
-			break;
-		case Direccion::Izquierda:
-			if (tablero[fantasma.y][fantasma.x - 1] != TipoDeBloque::Dibujo)
+				break;
+			case Direccion::Izquierda:
+				if (tablero[fantasma.y][fantasma.x - 1] != TipoDeBloque::Dibujo)
 
-			{
-				fantasma.direccionActual = Direccion::Izquierda;
-
-				if (fantasma.direccionAnterior == Direccion::Derecha)
 				{
-					fantasma.direccionActual = fantasma.direccionAnterior;
+					fantasma.direccionActual = Direccion::Izquierda;
+
+					if (fantasma.direccionAnterior == Direccion::Derecha)
+					{
+						fantasma.direccionActual = fantasma.direccionAnterior;
+					}
 				}
-			}
 
-			break;
-		case Direccion::Arriba:
-			if (tablero[fantasma.y - 1][fantasma.x] != TipoDeBloque::Dibujo)
+				break;
+			case Direccion::Arriba:
+				if (tablero[fantasma.y - 1][fantasma.x] != TipoDeBloque::Dibujo)
 
-			{
-				fantasma.direccionActual = Direccion::Arriba;
-				if (fantasma.direccionAnterior == Direccion::Abajo)
 				{
-					fantasma.direccionActual = fantasma.direccionAnterior;
+					fantasma.direccionActual = Direccion::Arriba;
+					if (fantasma.direccionAnterior == Direccion::Abajo)
+					{
+						fantasma.direccionActual = fantasma.direccionAnterior;
+					}
 				}
-			}
 
-			break;
-		case Direccion::Abajo:
-			if (tablero[fantasma.y + 1][fantasma.x] != TipoDeBloque::Dibujo)
-			{
-				fantasma.direccionActual = Direccion::Abajo;
-				if (fantasma.direccionAnterior == Direccion::Arriba)
+				break;
+			case Direccion::Abajo:
+				if (tablero[fantasma.y + 1][fantasma.x] != TipoDeBloque::Dibujo)
 				{
-					fantasma.direccionActual = fantasma.direccionAnterior;
+					fantasma.direccionActual = Direccion::Abajo;
+					if (fantasma.direccionAnterior == Direccion::Arriba)
+					{
+						fantasma.direccionActual = fantasma.direccionAnterior;
+					}
 				}
-			}
 				break;
 
-		}
+			}
 			if (ChekearPosicionFantasma(fantasma))
 			{
 				fantasma.direccionAnterior = fantasma.direccionActual;
 				fantasma.MovimientoFantasmal();
-				MoverCursor(40, 1);
-				cout << "X: " << fantasma.x << "Y: " << fantasma.y;
+
 			}
 			else
 			{
 				MoverFantasma(fantasma);
 			}
+		
 	}
-		bool ChekearPosicionFantasma(Fantasma & fantasma)
+	void MoverFantasmaEncerrado(Fantasma& fantasma)
+	{
+		switch (fantasma.direccionActual)
 		{
+		case Direccion::Derecha:
+
+			if (fantasma.x == 16)
+			{
+				fantasma.direccionActual = Direccion::Izquierda;
+			}
+			break;
+		case Direccion::Izquierda:
+			if (fantasma.x == 11)
+			{
+				fantasma.direccionActual = Direccion::Derecha;
+			}
+			break;
+		case Direccion::Arriba:
+			fantasma.direccionActual = Direccion::Izquierda;
+			break;
+		case Direccion::Abajo:
+				fantasma.direccionActual = Direccion::Derecha;
+			break;
+		}
+		
+		fantasma.MovimientoFantasmal();
+
+	}
+	bool ChekearPosicionFantasma(Fantasma& fantasma)
+	{
 
 		switch (fantasma.direccionActual)
 		{
@@ -312,7 +342,7 @@ struct Grilla {
 			{
 				return true;
 			}
-		
+
 			break;
 		case Direccion::Izquierda:
 			if (tablero[fantasma.y][fantasma.x - 1] != TipoDeBloque::Dibujo)
@@ -320,7 +350,7 @@ struct Grilla {
 			{
 				return true;
 			}
-			
+
 			break;
 		case Direccion::Arriba:
 			if (tablero[fantasma.y - 1][fantasma.x] != TipoDeBloque::Dibujo)
@@ -328,7 +358,7 @@ struct Grilla {
 				return true;
 			}
 			break;
-		
+
 		case Direccion::Abajo:
 			if (tablero[fantasma.y + 1][fantasma.x] != TipoDeBloque::Dibujo)
 			{
@@ -339,4 +369,3 @@ struct Grilla {
 		return false;
 	}
 };
-

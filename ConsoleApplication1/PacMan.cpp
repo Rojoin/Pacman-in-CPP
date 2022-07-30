@@ -168,7 +168,7 @@ void Pacman::DesDibujar()
 	MoverCursor(x, y);
 	cout << spa;
 }
-void Pacman::Colision(Grilla& grilla, Fantasma fantasma[], bool& GameOver)
+void Pacman::Colision(Grilla& grilla, Fantasma fantasma[])
 {
 	switch (grilla.tablero[y][x])
 	{
@@ -182,7 +182,11 @@ void Pacman::Colision(Grilla& grilla, Fantasma fantasma[], bool& GameOver)
 		puntuacion += 10;
 		for (int i = 0; i < maximoFantasmas; i++)
 		{
-			fantasma->estado = EstadoFantasma::Debil;
+			if (fantasma[i].estado == EstadoFantasma::Normal)
+			{
+			fantasma[i].estado = EstadoFantasma::Debil;
+
+			}
 		}
 		grilla.tablero[y][x] = TipoDeBloque::Vacio;
 		break;
@@ -191,23 +195,7 @@ void Pacman::Colision(Grilla& grilla, Fantasma fantasma[], bool& GameOver)
 		grilla.tablero[y][x] = TipoDeBloque::Vacio;
 		break;
 	}
-	for (int i = 0; i < maximoFantasmas; i++)
-	{
-		if (x == fantasma[i].x && y == fantasma[i].y)
-		{
-			if (fantasma[i].estado == EstadoFantasma::Debil)
-			{
-				fantasma[i].estado = EstadoFantasma::Muerto;
-				fantasma[i].x = 1;
-				fantasma[i].y = 1;
-				puntuacion += 100;
-			}
-			else if (fantasma[i].estado == EstadoFantasma::Normal)
-			{
-				SecuenciaMuerte(GameOver);
-			}
-		}
-	}
+	
 }
 void Pacman::SecuenciaMuerte(bool& GameOver)
 {
@@ -233,4 +221,15 @@ void Pacman::GetBuffer()
 {
 	direccionActual=direccionBuffer;
 }
-
+void Pacman::ResetearPosicion()
+{
+	x = xDefault;
+	y = yDefault;
+	direccionActual = Direccion::Derecha;
+}
+void Pacman::PuntuacionActual()
+{
+	MoverCursor(30, 0);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+	std::cout << puntuacion;
+}
