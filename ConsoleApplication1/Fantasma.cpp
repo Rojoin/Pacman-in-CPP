@@ -43,8 +43,44 @@ void Fantasma::ResetearPosicion(int primero)
 	else if (primero>0)
 	
 	{
-		x = xCaja;
+		x = xCaja+primero;
 		y = yCaja;
 		estado = EstadoFantasma::Encerrado;
+	}
+	colorActual = colorDefault;
+
+}
+void Fantasma::Debilitar()
+{
+	if (estado == EstadoFantasma::Normal)
+	{
+		estado = EstadoFantasma::Debil;
+		colorActual = Colores::Blanco;
+		cuerpoActual = cuerpo[1];
+	}
+}
+void Fantasma::Normalizar()
+{
+	if (estado == EstadoFantasma::Debil)
+	{
+		estado = EstadoFantasma::Normal;
+		cuerpoActual = cuerpo[0];
+		colorActual = colorDefault;
+	}
+}
+bool Fantasma::SalirDeCasa()
+{
+	if (estado == EstadoFantasma::Encerrado)
+	{
+		x = xDefault;
+		y = yDefault;
+		estado = EstadoFantasma::Normal;
+		cuerpoActual = cuerpo[0];
+		colorActual = colorDefault;
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }

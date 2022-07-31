@@ -121,7 +121,7 @@ void Pacman::DibujarPacMan(bool& aux)
 	if (estado == EstadoPacMan::Normal)
 	{
 			MoverCursor(x, y);
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+			ElegirColor(Colores::Amarillo);
 		if (!aux)
 		{
 
@@ -163,46 +163,90 @@ void Pacman::DibujarPacMan(bool& aux)
 
 	}
 }
+void Pacman::DibujarPacMan()
+{
+	if (estado == EstadoPacMan::Normal)
+	{
+		MoverCursor(x, y);
+		ElegirColor(Colores::Amarillo);
+		
+
+			switch (direccionAnterior)
+			{
+			case Direccion::Izquierda:
+				cuerpoActual = cuerpo[(int)Direccion::Izquierda];
+				break;
+			case Direccion::Derecha:
+				cuerpoActual = cuerpo[(int)Direccion::Derecha];
+				break;
+			case Direccion::Arriba:
+				cuerpoActual = cuerpo[(int)Direccion::Arriba];
+				break;
+			case Direccion::Abajo:
+				cuerpoActual = cuerpo[(int)Direccion::Abajo];
+				break;
+			}
+		cout << cuerpoActual;
+
+	}
+}
 void Pacman::DesDibujar()
 {
 	MoverCursor(x, y);
+	ElegirColor(Colores::Blanco);
 	cout << spa;
 }
-void Pacman::Colision(Grilla& grilla, Fantasma fantasma[])
+TipoDeBloque Pacman::CheckearTablero(Grilla& grilla)
 {
-	switch (grilla.tablero[y][x])
+	TipoDeBloque impactado;
+	impactado = grilla.tablero[y][x];
+	switch (impactado)
 	{
 	case TipoDeBloque::Vacio:
+		
 		break;
 	case TipoDeBloque::Cocos:
 		puntuacion++;
+		cocos++;
 		grilla.tablero[y][x] = TipoDeBloque::Vacio;
 		break;
 	case TipoDeBloque::Pildora:
 		puntuacion += 10;
-		for (int i = 0; i < maximoFantasmas; i++)
-		{
-			if (fantasma[i].estado == EstadoFantasma::Normal)
-			{
-			fantasma[i].estado = EstadoFantasma::Debil;
-
-			}
-		}
+		cocos++;
+		
 		grilla.tablero[y][x] = TipoDeBloque::Vacio;
+	
 		break;
 	case TipoDeBloque::Fruta:
 		puntuacion += 10;
 		grilla.tablero[y][x] = TipoDeBloque::Vacio;
 		break;
 	}
-	
+	return impactado;
 }
 void Pacman::SecuenciaMuerte(bool& GameOver)
 {
+	AnimacionMuerte();
 	vidas--;
 	if (vidas <= 0)
 	{
 		GameOver = true;
+		MoverCursor(9, 15);
+		ElegirColor(Colores::Rojo);
+		std::cout << "GAME  OVER";
+		MoverCursor(30, 30);
+	}
+	Sleep(500);
+}
+void Pacman::Ganar(bool& GameOver)
+{
+	if (cocos == puntosGanar)
+	{
+		GameOver = true;
+		MoverCursor(9, 15);
+		ElegirColor(Colores::Amarillo);
+		std::cout << " YOU  WIN ";
+		Sleep(500);
 	}
 }
 void Pacman::GuardarDireccionAnterior()
@@ -233,3 +277,25 @@ void Pacman::PuntuacionActual()
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
 	std::cout << puntuacion;
 }
+void Pacman::AnimacionMuerte()
+{
+	MoverCursor(x, y);
+	ElegirColor(Colores::Amarillo);
+	std::cout << cuerpoActual;
+	direccionActual = Direccion::Mid;
+	MoverCursor(x, y);
+	Sleep(500);
+	if (direccionAnterior ==Direccion::Arriba || direccionAnterior == Direccion::Abajo)
+	{
+		std::cout << cuerpo[5];
+	}
+	else
+	{
+		std::cout << cuerpo[5];
+	}
+	Sleep(500);
+	MoverCursor(x, y);
+	std::cout << cuerpo[6];
+	Sleep(500);
+}
+

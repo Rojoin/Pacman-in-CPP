@@ -5,12 +5,29 @@ const int filas = 28;
 const int columnas = 28;
 const int maximoFantasmas =4;
 
+
 enum class TipoDeBloque { Vacio, Cocos, Pildora, Fruta, Dibujo };
 enum class EstadoFantasma { Normal, Debil, Muerto,Encerrado};
 enum class EstadoPacMan { Normal, Debil, Muerto};
 enum class Direccion { Derecha,Izquierda,Arriba,Abajo,Mid};
-
-
+enum class Colores 
+{
+	Azul = 1,
+	Verde =2,
+	CelesteOscuro = 3,
+	Rojo = 4,
+	Violeta = 5,
+	Amarillo = 6,
+	Blanco = 7,
+	Gris = 8,
+	AzulClaro =9,
+	VerdeClaro = 10,
+	Celeste = 11,
+	RojoClaro =12,
+	VioletaClaro =13,
+	Crema = 14
+};
+const int puntosGanar = 228;
 const char pVV = 186;		//║
 const char pHH = 205;		//═
 const char eII = 200;		//╚
@@ -32,5 +49,5 @@ const char pacmanMidDeadV = 179;//─
 const char pacmanDead = 158;//×
 
 void MoverCursor(int x, int y);
-
+void ElegirColor(Colores color);
 

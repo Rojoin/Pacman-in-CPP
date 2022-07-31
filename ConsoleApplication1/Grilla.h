@@ -61,23 +61,24 @@ struct Grilla {
 				case pTT:
 
 					tablero[fil][col] = TipoDeBloque::Dibujo;
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9);
+					ElegirColor(Colores::AzulClaro);
 					break;
 				case ent:
 					tablero[fil][col] = TipoDeBloque::Dibujo;
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+					ElegirColor(Colores::Blanco);
+					
 					break;
 				case oMM:
 					tablero[fil][col] = TipoDeBloque::Cocos;
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+					ElegirColor(Colores::Blanco);
 					break;
 				case pil:
 					tablero[fil][col] = TipoDeBloque::Pildora;
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+					ElegirColor(Colores::Amarillo);
 					break;
 				case spa:
 					tablero[fil][col] = TipoDeBloque::Vacio;
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+					ElegirColor(Colores::Blanco);
 
 				default:
 					break;
@@ -109,25 +110,25 @@ struct Grilla {
 					case pTI:
 					case pTT:
 						tablero[fil][col] = TipoDeBloque::Dibujo;
-						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9);
+						ElegirColor(Colores::AzulClaro);
+
 						break;
 					case ent:
 						tablero[fil][col] = TipoDeBloque::Dibujo;
-						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+						ElegirColor(Colores::Blanco);
 						break;
 					case oMM:
 						tablero[fil][col] = TipoDeBloque::Cocos;
-						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+						ElegirColor(Colores::Blanco);
 						break;
 					case pil:
 						tablero[fil][col] = TipoDeBloque::Pildora;
-						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+						ElegirColor(Colores::Amarillo);
+
 						break;
 					case spa:
 						tablero[fil][col] = TipoDeBloque::Vacio;
-						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-
-					default:
+						ElegirColor(Colores::Blanco);
 						break;
 					}
 					bool posicionOcupada = false;
@@ -172,20 +173,16 @@ struct Grilla {
 				case eSD:
 				case pTI:
 				case pTT:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9);
+					ElegirColor(Colores::AzulClaro);
 					break;
 				case ent:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-					break;
 				case oMM:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+				case spa:
+					ElegirColor(Colores::Blanco);
 					break;
 				case pil:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+					ElegirColor(Colores::Amarillo);
 					break;
-				case spa:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-
 				default:
 					break;
 				}
@@ -219,6 +216,7 @@ struct Grilla {
 			{
 				if (tablero[fil][col] == TipoDeBloque::Vacio)
 				{
+					ElegirColor(Colores::Blanco);
 					tableroDibujado[fil][col] = spa;
 				}
 
@@ -229,80 +227,82 @@ struct Grilla {
 	void DesDibujarFantasma(Fantasma& fantasma)
 	{
 		MoverCursor(fantasma.x, fantasma.y);
+		ElegirColor(Colores::Blanco);
 		std::cout << spa;
 	}
 	void DibujarFantasma(Fantasma& fantasma)
 	{
 		MoverCursor(fantasma.x, fantasma.y);
+		ElegirColor(fantasma.colorActual);
 		std::cout << fantasma.cuerpoActual;
 	}
 	void MoverFantasma(Fantasma& fantasma)
 	{
-		
-		
+
+
 		Direccion random = (Direccion)(rand() % 4);
-			switch (random)
+		switch (random)
+		{
+		case Direccion::Derecha:
+			if (tablero[fantasma.y][fantasma.x + 1] != TipoDeBloque::Dibujo)
 			{
-			case Direccion::Derecha:
-				if (tablero[fantasma.y][fantasma.x + 1] != TipoDeBloque::Dibujo)
+				fantasma.direccionActual = Direccion::Derecha;
+				if (fantasma.direccionAnterior == Direccion::Izquierda)
 				{
-					fantasma.direccionActual = Direccion::Derecha;
-					if (fantasma.direccionAnterior == Direccion::Izquierda)
-					{
-						fantasma.direccionActual = fantasma.direccionAnterior;
-					}
+					fantasma.direccionActual = fantasma.direccionAnterior;
 				}
-
-
-				break;
-			case Direccion::Izquierda:
-				if (tablero[fantasma.y][fantasma.x - 1] != TipoDeBloque::Dibujo)
-
-				{
-					fantasma.direccionActual = Direccion::Izquierda;
-
-					if (fantasma.direccionAnterior == Direccion::Derecha)
-					{
-						fantasma.direccionActual = fantasma.direccionAnterior;
-					}
-				}
-
-				break;
-			case Direccion::Arriba:
-				if (tablero[fantasma.y - 1][fantasma.x] != TipoDeBloque::Dibujo)
-
-				{
-					fantasma.direccionActual = Direccion::Arriba;
-					if (fantasma.direccionAnterior == Direccion::Abajo)
-					{
-						fantasma.direccionActual = fantasma.direccionAnterior;
-					}
-				}
-
-				break;
-			case Direccion::Abajo:
-				if (tablero[fantasma.y + 1][fantasma.x] != TipoDeBloque::Dibujo)
-				{
-					fantasma.direccionActual = Direccion::Abajo;
-					if (fantasma.direccionAnterior == Direccion::Arriba)
-					{
-						fantasma.direccionActual = fantasma.direccionAnterior;
-					}
-				}
-				break;
-
 			}
-			if (ChekearPosicionFantasma(fantasma))
+
+
+			break;
+		case Direccion::Izquierda:
+			if (tablero[fantasma.y][fantasma.x - 1] != TipoDeBloque::Dibujo)
+
 			{
-				fantasma.direccionAnterior = fantasma.direccionActual;
-				fantasma.MovimientoFantasmal();
+				fantasma.direccionActual = Direccion::Izquierda;
 
+				if (fantasma.direccionAnterior == Direccion::Derecha)
+				{
+					fantasma.direccionActual = fantasma.direccionAnterior;
+				}
 			}
-			else
+
+			break;
+		case Direccion::Arriba:
+			if (tablero[fantasma.y - 1][fantasma.x] != TipoDeBloque::Dibujo)
+
 			{
-				MoverFantasma(fantasma);
+				fantasma.direccionActual = Direccion::Arriba;
+				if (fantasma.direccionAnterior == Direccion::Abajo)
+				{
+					fantasma.direccionActual = fantasma.direccionAnterior;
+				}
 			}
-		
+
+			break;
+		case Direccion::Abajo:
+			if (tablero[fantasma.y + 1][fantasma.x] != TipoDeBloque::Dibujo)
+			{
+				fantasma.direccionActual = Direccion::Abajo;
+				if (fantasma.direccionAnterior == Direccion::Arriba)
+				{
+					fantasma.direccionActual = fantasma.direccionAnterior;
+				}
+			}
+			break;
+
+		}
+		if (ChekearPosicionFantasma(fantasma))
+		{
+			fantasma.direccionAnterior = fantasma.direccionActual;
+			fantasma.MovimientoFantasmal();
+
+		}
+		else
+		{
+			MoverFantasma(fantasma);
+		}
+
 	}
 	void MoverFantasmaEncerrado(Fantasma& fantasma)
 	{
@@ -325,10 +325,10 @@ struct Grilla {
 			fantasma.direccionActual = Direccion::Izquierda;
 			break;
 		case Direccion::Abajo:
-				fantasma.direccionActual = Direccion::Derecha;
+			fantasma.direccionActual = Direccion::Derecha;
 			break;
 		}
-		
+
 		fantasma.MovimientoFantasmal();
 
 	}

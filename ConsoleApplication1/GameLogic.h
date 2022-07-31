@@ -8,7 +8,8 @@
 
 Grilla grilla;
 Pacman pacman;
-Fantasma fantasma[4]{ {4,1,EstadoFantasma::Normal},{2,1,EstadoFantasma::Normal},{3,1,EstadoFantasma::Normal},{13,13,EstadoFantasma::Encerrado} };
+//Fantasma fantasma[4]{ {4,1,EstadoFantasma::Normal},{2,1,EstadoFantasma::Normal},{3,1,EstadoFantasma::Normal},{13,13,EstadoFantasma::Encerrado} };
+Fantasma fantasma[4]{ };
 //Fantasma fantasma[1]{ {4,1} };
 
 void FuenteDeConsola(int ancho, int alto)
@@ -18,8 +19,9 @@ void FuenteDeConsola(int ancho, int alto)
 	cfi.dwFontSize.X = 24;
 	cfi.dwFontSize.Y = 24;
 	cfi.nFont = 4;
-	cfi.FontFamily =
 		cfi.FontFamily = FF_DONTCARE;
+
+		wcscpy_s(cfi.FaceName, L"Terminal"); // Choose your font
 	cfi.FontWeight = FW_NORMAL;
 
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
@@ -29,7 +31,7 @@ void RemoveScrollbarAndResize()
 
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE); // Consigo una referencia al handle de salida
 	CONSOLE_SCREEN_BUFFER_INFO info; // Creo una variable de informacion del buffer de la pantalla
-	GetConsoleScreenBufferInfo(handle, &info); // Consigo el buffer actual de la pantalla de la consola
+	GetConsoleScreenBufferInfo(handle, &info); // Consigo el buffer actual de la pantalla de la GetStdHandle(STD_OUTPUT_HANDLE)
 
 	COORD new_size // Creo una variable que indica que el buffer actual de la pantalla es exactamente igual al tamaño de la pantalla + 1 pixel
 	{
@@ -38,7 +40,7 @@ void RemoveScrollbarAndResize()
 	};
 
 	SetConsoleScreenBufferSize(handle, new_size); // Seteo mi nuevo tamaño de buffer con mi variable
-	HWND consoleWindow = GetConsoleWindow(); // Consigo una referencia a la ventana de la consola
+	HWND consoleWindow = GetConsoleWindow(); // Consigo una referencia a la ventana de la GetStdHandle(STD_OUTPUT_HANDLE)
 	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX); // Seteo el tamaño de la pantalla como el tamaño total incluyendo los bordes, por lo tanto tapo los eventos de resize
 
 }
@@ -68,22 +70,85 @@ void ResetAfterDead(Fantasma fantasma[], Pacman& pacman)
 		fantasma[fantas].ResetearPosicion(fantas);
 	}
 }
-void Colisiones(Fantasma fantasma[],Pacman& pacman,Grilla& grilla)
+void ResetFantasmas(Fantasma fantasma[], int& timerCasa)
 {
-	pacman.Colision(grilla, fantasma);
+	for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+	{
+		fantasma[fantas].Normalizar();
+	}
+	timerCasa = clock();
+}
+void SacarFantasmasDeLaCasa(Fantasma fantasma[],int& timerCasa)
+{
+	bool aux = false;
+	for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+	{
+		if (fantasma[fantas].SalirDeCasa())
+		{
+			timerCasa = clock();
+		
+			break;	
+		}
+	}
+
+		timerCasa = clock();
+	
+
+}
+void IniciarFantasmas(Fantasma fantasma[])
+{
+	for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+	{
+		fantasma[fantas].ResetearPosicion(fantas);
+		switch (fantas)
+		{
+		case 0:
+			fantasma[fantas].colorDefault = Colores::Rojo;
+			fantasma[fantas].colorActual = fantasma[fantas].colorDefault;
+			break;
+		case 1:
+			fantasma[fantas].colorDefault = Colores::Verde;
+			fantasma[fantas].colorActual = fantasma[fantas].colorDefault;
+			break;
+		case 2:
+			fantasma[fantas].colorDefault = Colores::VioletaClaro;
+			fantasma[fantas].colorActual = fantasma[fantas].colorDefault;
+			break;
+		case 3:
+			fantasma[fantas].colorDefault = Colores::Celeste;
+			fantasma[fantas].colorActual = fantasma[fantas].colorDefault;
+			break;
+		}
+	}
+	
+}
+void Colisiones(Fantasma fantasma[],Pacman& pacman,Grilla& grilla,int& timerFantasma,bool& GameOver)
+{
+	if (pacman.CheckearTablero(grilla) == TipoDeBloque::Pildora)
+	{
+		 timerFantasma = clock();
+		for (int i = 0; i < maximoFantasmas; i++)
+		{
+			fantasma[i].Debilitar();
+		}
+	}
 	for (int i = 0; i < maximoFantasmas; i++)
 	{
 		if (pacman.x == fantasma[i].x && pacman.y == fantasma[i].y)
 		{
 			if (fantasma[i].estado == EstadoFantasma::Debil)
 			{
+				
+				pacman.DibujarPacMan();
 				fantasma[i].estado = EstadoFantasma::Encerrado;
 				fantasma[i].x = fantasma[i].xCaja;
 				fantasma[i].y = fantasma[i].yCaja;
+				Sleep(500);
 				pacman.puntuacion += 100;
 			}
 			else if (fantasma[i].estado == EstadoFantasma::Normal)
 			{
+				pacman.SecuenciaMuerte(GameOver);
 				ResetAfterDead(fantasma, pacman);
 			}
 		}
@@ -91,8 +156,8 @@ void Colisiones(Fantasma fantasma[],Pacman& pacman,Grilla& grilla)
 }
 void GameLogic()
 {
-	/*	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
-	static CONSOLE_FONT_INFOEX  fontex;
+	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
+	/*	static CONSOLE_FONT_INFOEX  fontex;
 	fontex.cbSize = sizeof(CONSOLE_FONT_INFOEX);
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetCurrentConsoleFontEx(hOut, 0, &fontex);
@@ -114,29 +179,34 @@ void GameLogic()
 	bool midAnimation = false;
 
 	int frame = 150;
-
+	int timerFantasma;
+	int timerCasa = clock();
 	bool gameover = false;
 
 	grilla.Iniciar(pacman.x, pacman.y, fantasma);
-	
-	int tiempo = clock();
+	IniciarFantasmas(fantasma);
+	int tiempo = 0;
+
 	while (!gameover)
 	{
+		
 		do
 		{
+
+		Colisiones(fantasma, pacman,grilla,timerFantasma,gameover);
+		int tiempoActual = clock();
 			
 
 			
 			if (tiempo % 2000 == 0)
 			{
-				Colisiones(fantasma, pacman,grilla);
 				
 				
 				pacman.PuntuacionActual();
 				grilla.Dibujar(pacman.x, pacman.y, fantasma);
 				grilla.Chekear();
 				pacman.DesDibujar();
-
+				Colisiones(fantasma, pacman, grilla, timerFantasma, gameover);
 				switch (pacman.direccionActual)
 				{
 				case Direccion::Arriba:
@@ -152,9 +222,10 @@ void GameLogic()
 					pacman.MoverIzquierda(grilla, frame);
 					break;
 				}
+				Colisiones(fantasma, pacman, grilla, timerFantasma, gameover);
 				pacman.DesDibujar();
-				Colisiones(fantasma, pacman,grilla);
 				pacman.DibujarPacMan(midAnimation);
+
 			}
 			if (tiempo%3000 == 0)
 			{
@@ -170,8 +241,8 @@ void GameLogic()
 					}
 					grilla.DibujarFantasma(fantasma[fantas]);
 				}
+				Colisiones(fantasma, pacman, grilla, timerFantasma, gameover);
 				grilla.Dibujar(pacman.x, pacman.y, fantasma);
-				Colisiones(fantasma, pacman, grilla);
 			}
 
 			tiempo++;
@@ -179,6 +250,19 @@ void GameLogic()
 			{
 				tiempo = 0;
 			}
+			if ((tiempoActual- timerFantasma)/1000 == 5)
+			{
+				
+
+				
+				ResetFantasmas(fantasma,timerCasa);
+				timerFantasma = 0;
+			}
+			if ((tiempoActual - timerCasa)/1000 == 5)
+			{
+				SacarFantasmasDeLaCasa(fantasma,timerCasa);
+			}
+			pacman.Ganar(gameover);
 		} while (!_kbhit()&&!gameover);
 		if (!gameover)
 		{
@@ -208,7 +292,9 @@ void GameLogic()
 			break;
 		}
 		pacman.SetBuffer();
+		Colisiones(fantasma, pacman, grilla, timerFantasma, gameover);
 		}
-
+		
 	};
+
 }
