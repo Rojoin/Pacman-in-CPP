@@ -91,7 +91,7 @@ int main()
 	srand(time(0));
 	GameLogic();
 	MoverCursor(30, 30);
-	cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+	
 }
 
 // Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar

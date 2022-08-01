@@ -4,6 +4,7 @@
 #include "Grilla.h"
 #include "Graphics.h"
 #include <conio.h>
+#include "InputManager.h"
 
 
 Grilla grilla;
@@ -140,9 +141,8 @@ void Colisiones(Fantasma fantasma[],Pacman& pacman,Grilla& grilla,int& timerFant
 			{
 				
 				pacman.DibujarPacMan();
-				fantasma[i].estado = EstadoFantasma::Encerrado;
-				fantasma[i].x = fantasma[i].xCaja;
-				fantasma[i].y = fantasma[i].yCaja;
+				
+				fantasma[i].Encarcelar();
 				Sleep(500);
 				pacman.puntuacion += 100;
 			}
@@ -241,6 +241,7 @@ void GameLogic()
 					}
 					grilla.DibujarFantasma(fantasma[fantas]);
 				}
+
 				Colisiones(fantasma, pacman, grilla, timerFantasma, gameover);
 				grilla.Dibujar(pacman.x, pacman.y, fantasma);
 			}
@@ -268,29 +269,7 @@ void GameLogic()
 		{
 
 		pacman.GuardarDireccionAnterior();
-		switch (_getch())
-		{
-		case 'w':
-
-			pacman.direccionActual = Direccion::Arriba;
-			break;
-		case 's':
-			pacman.direccionActual = Direccion::Abajo;
-			break;
-		case 'd':
-		{
-			pacman.direccionActual = Direccion::Derecha;
-
-		}
-		break;
-		case 'a':
-		{
-			pacman.direccionActual = Direccion::Izquierda;
-		}
-		break;
-		default:
-			break;
-		}
+		InputManager(pacman);
 		pacman.SetBuffer();
 		Colisiones(fantasma, pacman, grilla, timerFantasma, gameover);
 		}

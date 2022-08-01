@@ -84,3 +84,11 @@ bool Fantasma::SalirDeCasa()
 		return false;
 	}
 }
+void Fantasma::Encarcelar()
+{
+	estado = EstadoFantasma::Encerrado;
+	cuerpoActual = cuerpo[0];
+	colorActual = colorDefault;
+	x = xCaja;
+	y = yCaja;
+}

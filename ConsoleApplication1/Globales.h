@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <Windows.h>
+
 const int filas = 28;
 const int columnas = 28;
 const int maximoFantasmas =4;
@@ -27,6 +28,9 @@ enum class Colores
 	VioletaClaro =13,
 	Crema = 14
 };
+enum class GamesStates{Menu,Game,How,Options,Credits,Exit};
+
+
 const int puntosGanar = 228;
 const char pVV = 186;		//║
 const char pHH = 205;		//═
@@ -47,6 +51,8 @@ const char pacmanRight = 60;//<
 const char pacmanMidDeadH = 196;//─
 const char pacmanMidDeadV = 179;//─
 const char pacmanDead = 158;//×
+const char fantasmaAlive = 77;//M
+const char fantasmaDead = 109;//m
 
 void MoverCursor(int x, int y);
 void ElegirColor(Colores color);

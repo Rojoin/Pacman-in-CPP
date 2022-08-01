@@ -14,11 +14,13 @@ struct Fantasma
 	const int yCaja = 13;
 	Direccion direccionActual;
 	Direccion direccionAnterior;
-	char cuerpo[3]{ 'M','m', 'Q'};
+	char cuerpo[2]{ fantasmaAlive,fantasmaDead};
 	char cuerpoActual = { cuerpo[0] };
 	void MovimientoFantasmal();
 	void ResetearPosicion(int primero);
 	void Normalizar();
 	void Debilitar();
+	void Encarcelar();
+
 	bool SalirDeCasa();
 };
