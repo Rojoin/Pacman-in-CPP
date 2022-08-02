@@ -52,6 +52,7 @@ void Fantasma::ResetearPosicion(int primero)
 }
 void Fantasma::Debilitar()
 {
+	
 	if (estado == EstadoFantasma::Normal)
 	{
 		estado = EstadoFantasma::Debil;
@@ -68,9 +69,9 @@ void Fantasma::Normalizar()
 		colorActual = colorDefault;
 	}
 }
-bool Fantasma::SalirDeCasa()
+bool Fantasma::SalirDeCasa(int tiempo)
 {
-	if (estado == EstadoFantasma::Encerrado)
+	if (estado == EstadoFantasma::Encerrado && ((tiempo-timerFantasma)/1000) ==10)
 	{
 		x = xDefault;
 		y = yDefault;

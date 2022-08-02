@@ -6,6 +6,8 @@ struct Fantasma
 	int x;
 	int y;
 	EstadoFantasma estado = { EstadoFantasma::Normal };
+	int timerFantasma;
+	int timerFantasmaPowerUp;
 	Colores colorActual;
 	Colores colorDefault;
 	const int xDefault =11;
@@ -22,5 +24,5 @@ struct Fantasma
 	void Debilitar();
 	void Encarcelar();
 
-	bool SalirDeCasa();
+	bool SalirDeCasa(int tiempo);
 };

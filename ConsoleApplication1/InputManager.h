@@ -4,4 +4,4 @@
 #include "PacMan.h"
 
 void InputManager();
-void InputManager(Pacman& pacman);
+void InputManager(Pacman& pacman, bool& gameOver, bool& juegoCorriendo);

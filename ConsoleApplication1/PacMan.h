@@ -8,7 +8,7 @@ struct Pacman
 	char cuerpo[7]{ pacmanRight,pacmanLeft,pacmanUp,pacmanDown,pacmanMidDeadH,pacmanMidDeadV,pacmanDead };
 	char cuerpoActual = cuerpo[0];
 	const int xDefault = 13;
-	const  int yDefault = 21;
+	const int yDefault = 21;
 	int x = xDefault;
 	int y = yDefault;
 	Colores colorBase = Colores::Amarillo;
@@ -25,9 +25,10 @@ struct Pacman
 	void MoverDerecha(Grilla grilla, int& frames);
 	void MoverArriba(Grilla grilla, int& frames);
 	void MoverAbajo(Grilla grilla, int& frames);
-	void Ganar(bool& GameOver);
-	void SecuenciaMuerte(bool& GameOver);
+	bool Ganar(bool& GameOver, bool& continuar);
+	void SecuenciaMuerte(bool& GameOver, bool& die,bool& juegoCorriendo);
 	void AnimacionMuerte();
+	void IniciarPacman(bool continuar);
 	void DibujarPacMan(bool& aux);
 	void DibujarPacMan();
 	void DesDibujar();
@@ -36,5 +37,6 @@ struct Pacman
 	void SetBuffer();
 	void GetBuffer();
 	void ResetearPosicion();
-	void PuntuacionActual();
+	void DibujarPuntuacion();
+	void DibujarVidas();
 };

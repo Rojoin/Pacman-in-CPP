@@ -16,7 +16,53 @@ char izquierda = izquierdaDefault;
 char derecha = derechaDefault;
 char seleccionar = seleccionarDefault;
 char resetTecla = resetTeclaDefault;
-void InputManager(Pacman& pacman)
+void Continuar(bool& gameOver, bool& juegoCorriendo)
+{
+	MoverCursor(30, 4);
+	ElegirColor(Colores::Amarillo);
+	cout << "Quieres volver al menu principal? ";
+	MoverCursor(30, 5);
+	cout <<"Aprete ";
+	ElegirColor(Colores::VerdeClaro);
+	cout << aceptarTecla;
+	ElegirColor(Colores::Amarillo);
+	cout << " para salir o ";
+	ElegirColor(Colores::RojoClaro);
+	cout << negarTecla;
+	ElegirColor(Colores::Amarillo);
+	cout << " seguir jugando";
+	char input = _getch();
+	if (input == aceptarTecla)
+	{
+		ElegirColor(Colores::Blanco);
+		MoverCursor(30, 4);
+		cout << "                                                                         ";
+		MoverCursor(30, 5);
+		cout << "                                                                         ";
+		MoverCursor(30, 4);
+		ElegirColor(Colores::Amarillo);
+		cout << "Gracias por Jugar,aprete cualquier tecla para volver al menu :)";
+		gameOver = false;
+		juegoCorriendo = false;
+		//menuController = MenuController::Menu;
+		ElegirColor(Colores::Blanco);
+	}
+	else if (input == negarTecla)
+	{
+		ElegirColor(Colores::Blanco);
+		MoverCursor(30, 4);
+		cout << "                                                                         ";
+		MoverCursor(30, 5);
+		cout << "                                                                         ";
+		return;
+	}
+	else
+	{
+		Continuar(gameOver,juegoCorriendo);
+	}
+
+}
+void InputManager(Pacman& pacman,bool& gameOver, bool& juegoCorriendo)
 {
 	char input = _getch();
     if (input == arriba)
@@ -37,12 +83,12 @@ void InputManager(Pacman& pacman)
     } //Derecha
     else if (input == seleccionar)
     {
-
+		pacman.cocos = 228;
     } //Seleccion
     
     else if (input == aceptarTecla)
     {
-       // Continuar();
+       Continuar(gameOver,juegoCorriendo);
     }
     else if (input == resetTecla)
     {

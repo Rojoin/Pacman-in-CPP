@@ -44,6 +44,8 @@ const char oMM = 250;
 const char pil = 157;
 const char spa = 32;
 const char ent = 196;
+const char fru = 208;
+
 const char pacmanUp = 118;//v
 const char pacmanDown = 94;//^
 const char pacmanLeft = 62;//>
@@ -53,6 +55,8 @@ const char pacmanMidDeadV = 179;//─
 const char pacmanDead = 158;//×
 const char fantasmaAlive = 77;//M
 const char fantasmaDead = 109;//m
+const int GameTimeDefault = 3000;
+const int GametimePowerUp = 500;
 
 void MoverCursor(int x, int y);
 void ElegirColor(Colores color);

@@ -142,8 +142,10 @@
   <ItemGroup>
     <ClCompile Include="ConsoleApplication1.cpp" />
     <ClCompile Include="Fantasma.cpp" />
+    <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="Globales.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="PacMan.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +155,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Grilla.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="PacMan.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

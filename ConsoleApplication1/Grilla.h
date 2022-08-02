@@ -11,8 +11,7 @@ using namespace std;
 struct Grilla {
 
 	TipoDeBloque tablero[filas][columnas];
-	char tableroDibujado[filas][columnas] =
-	{
+	const char tableroDibujadoCompleto[filas][columnas]= {
 		{eSI, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pTT, pTT, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, eSD}, //linea0
 		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea1
 		{pVV, oMM, eSI, pHH, pHH, eSD, oMM, eSI, pHH, pHH, pHH, eSD, oMM, pVV, pVV, oMM, eSI, pHH, pHH, pHH, eSD, oMM, eSI, pHH, pHH, eSD, oMM, pVV}, //linea2
@@ -28,7 +27,7 @@ struct Grilla {
 		{pHH, pHH, pHH, pHH, pHH, eID, oMM, eII, eID, spa, eSI, pHH, pHH, ent, ent, pHH, pHH, eSD, spa, eII, eID, oMM, eII, pHH, pHH, pHH, pHH, pHH}, //linea12
 		{spa, spa, spa, spa, spa, spa, oMM, spa, spa, spa, pVV, spa, spa, spa, spa, spa, spa, pVV, spa, spa, spa, oMM, spa, spa, spa, spa, spa, spa}, //linea13
 		{pHH, pHH, pHH, pHH, pHH, eSD, oMM, eSI, eSD, spa, eII, pHH, pHH, pHH, pHH, pHH, pHH, eID, spa, eSI, eSD, oMM, eSI, pHH, pHH, pHH, pHH, pHH}, //linea14
-		{spa, spa, spa, spa, spa, pVV, oMM, pVV, pVV, spa, spa, spa, spa, spa, spa, spa, spa, spa, spa, pVV, pVV, oMM, pVV, spa, spa, spa, spa, spa}, //linea15
+		{spa, spa, spa, spa, spa, pVV, oMM, pVV, pVV, spa, spa, spa, spa, fru, spa, spa, spa, spa, spa, pVV, pVV, oMM, pVV, spa, spa, spa, spa, spa}, //linea15
 		{eSI, pHH, pHH, pHH, pHH, eID, oMM, eII, eID, spa, eSI, pHH, pHH, pHH, pHH, pHH, pHH, eSD, spa, eII, eID, oMM, eII, pHH, pHH, pHH, pHH, eSD}, //linea16
 		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, eII, pHH, pHH, eSD, eSI, pHH, pHH, eID, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea17
 		{pVV, oMM, eSI, pHH, pHH, pHH, pHH, pHH, eSD, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, eSI, pHH, pHH, pHH, pHH, pHH, eSD, oMM, pVV}, //linea18
@@ -42,6 +41,7 @@ struct Grilla {
 		{pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, pVV, pVV, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, oMM, pVV}, //linea26
 		{eII, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pTI, pTI, pHH, pHH, pHH, pHH, pTI, pTI, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, pHH, eID}  //linea27
 	};
+	char tableroDibujado[filas][columnas];
 	void GrillaReset()
 	{
 
@@ -79,7 +79,10 @@ struct Grilla {
 				case spa:
 					tablero[fil][col] = TipoDeBloque::Vacio;
 					ElegirColor(Colores::Blanco);
-
+				case fru:
+					tablero[fil][col] = TipoDeBloque::Fruta;
+					ElegirColor(Colores::Rojo);
+					break;
 				default:
 					break;
 				}
@@ -92,7 +95,14 @@ struct Grilla {
 	void Iniciar(int pacmanX, int pacmanY, Fantasma fantasma[])
 	{
 
+		for (int fil = 0; fil < filas; fil++)
 		{
+			for (int col = 0; col < columnas; col++)
+			{
+				tableroDibujado[fil][col] = tableroDibujadoCompleto[fil][col];
+			}
+
+		}
 
 			for (int fil = 0; fil < filas; fil++)
 			{
@@ -130,6 +140,10 @@ struct Grilla {
 						tablero[fil][col] = TipoDeBloque::Vacio;
 						ElegirColor(Colores::Blanco);
 						break;
+					case fru:
+						tablero[fil][col] = TipoDeBloque::Fruta;
+						ElegirColor(Colores::Rojo);
+						break;
 					}
 					bool posicionOcupada = false;
 					for (int i = 0; i < maximoFantasmas; i++)
@@ -153,9 +167,119 @@ struct Grilla {
 
 				}
 			}
+		
+	}
+	void Dibujar(int pacmanX, int pacmanY)
+	{
+		for (int veces = 0; veces < 6; veces++)
+		{
+
+		for (int fil = 0; fil < filas; fil++)
+		{
+			for (int col = 0; col < columnas; col++)
+			{
+				MoverCursor(col, fil);
+				switch (tableroDibujado[fil][col])
+				{
+					case pVV:
+					case pHH:
+					case eII:
+					case eSI:
+					case eID:
+					case eSD:
+					case pTI:
+					case pTT:
+					if (veces%2 == 0)
+					{
+					ElegirColor(Colores::AzulClaro);
+
+					}
+					else
+					{
+						ElegirColor(Colores::Blanco);
+					}
+					break;
+				case ent:
+				case oMM:
+				case spa:
+				case fru:
+					break;
+				default:
+					break;
+				}
+				bool posicionOcupada = false;
+				
+				if (pacmanX == col && pacmanY == fil)
+				{
+
+					posicionOcupada = true;
+				}
+
+				if (!posicionOcupada)
+				{
+					std::cout << tableroDibujado[fil][col];
+				}
+			}
+		}
+		Sleep(500);
 		}
 	}
 	void Dibujar(int pacmanX, int pacmanY, Fantasma fantasma[])
+	{
+
+		for (int fil = 0; fil < filas; fil++)
+		{
+			for (int col = 0; col < columnas; col++)
+			{
+				MoverCursor(col, fil);
+				switch (tableroDibujado[fil][col])
+				{
+				case pVV:
+				case pHH:
+				case eII:
+				case eSI:
+				case eID:
+				case eSD:
+				case pTI:
+				case pTT:
+					ElegirColor(Colores::AzulClaro);
+					break;
+				case ent:
+				case oMM:
+				case spa:
+					ElegirColor(Colores::Blanco);
+					break;
+				case pil:
+					ElegirColor(Colores::Amarillo);
+					break;
+				case fru:
+					ElegirColor(Colores::Rojo);
+					break;
+				default:
+					break;
+				}
+				bool posicionOcupada = false;
+				for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+				{
+					if (fantasma[fantas].x == col && fantasma[fantas].y == fil)
+					{
+						posicionOcupada = true;
+					}
+				}
+				if (pacmanX == col && pacmanY == fil)
+				{
+
+					posicionOcupada = true;
+				}
+
+				if (!posicionOcupada)
+				{
+					std::cout << tableroDibujado[fil][col];
+				}
+			}
+		}
+	}	
+	void DibujarGanar(int pacmanX, int pacmanY, Fantasma fantasma[])
 	{
 
 		for (int fil = 0; fil < filas; fil++)
