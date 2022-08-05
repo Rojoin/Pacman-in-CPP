@@ -79,9 +79,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -122,6 +124,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>XCOPY "$(SolutionDir)Music" "$(TargetDir)Music" /i /d /y</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -138,25 +143,32 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>XCOPY "$(SolutionDir)Music" "$(TargetDir)Music" /i /d /y</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConsoleApplication1.cpp" />
-    <ClCompile Include="Fantasma.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Ghost.cpp" />
     <ClCompile Include="GameLogic.cpp" />
-    <ClCompile Include="Globales.cpp" />
+    <ClCompile Include="Globals.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="PacMan.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Fantasma.h" />
+    <ClInclude Include="Ghost.h" />
     <ClInclude Include="GameLogic.h" />
-    <ClInclude Include="Globales.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Graphics.h" />
-    <ClInclude Include="Grilla.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="PacMan.h" />
+    <ClInclude Include="SoundManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

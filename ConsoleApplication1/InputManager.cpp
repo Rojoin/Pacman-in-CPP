@@ -1,98 +1,152 @@
 #include "InputManager.h"
 
-const char arribaDefault = 'w';
-const char abajoDefault = 's';
-const char izquierdaDefault = 'a';
-const char derechaDefault = 'd';
-const char seleccionarDefault = 'e';
-const char resetTeclaDefault = 'r';
-const char aceptarTeclaDefault = '1';
-const char negarTeclaDefault = '2';
-char aceptarTecla = aceptarTeclaDefault;
-char negarTecla = negarTeclaDefault;
-char arriba = arribaDefault;
-char abajo = abajoDefault;
-char izquierda = izquierdaDefault;
-char derecha = derechaDefault;
-char seleccionar = seleccionarDefault;
-char resetTecla = resetTeclaDefault;
-void Continuar(bool& gameOver, bool& juegoCorriendo)
+
+
+
+
+int cursor;
+void PauseMenu(bool& gameOver, bool& juegoCorriendo,char& acceptKey,char& deniedKey)
 {
-	MoverCursor(30, 4);
-	ElegirColor(Colores::Amarillo);
-	cout << "Quieres volver al menu principal? ";
-	MoverCursor(30, 5);
-	cout <<"Aprete ";
-	ElegirColor(Colores::VerdeClaro);
-	cout << aceptarTecla;
-	ElegirColor(Colores::Amarillo);
-	cout << " para salir o ";
-	ElegirColor(Colores::RojoClaro);
-	cout << negarTecla;
-	ElegirColor(Colores::Amarillo);
-	cout << " seguir jugando";
-	char input = _getch();
-	if (input == aceptarTecla)
+	MoveCursor(0, 31);
+	SelectColor(Colors::Yellow);
+	cout << "Menu de Pausa";
+	MoveCursor(0, 32);
+	cout << "Aprete ";
+	SelectColor(Colors::LightGreen);
+	cout << acceptKey;
+	SelectColor(Colors::Yellow);
+	cout << " seguir jugando o ";
+	SelectColor(Colors::LightRed);
+	if (deniedKey == deniedDefaultKey)
 	{
-		ElegirColor(Colores::Blanco);
-		MoverCursor(30, 4);
+		cout << "ESC";
+	}
+	else
+	{
+		cout << deniedKey;
+	}
+	SelectColor(Colors::Yellow);
+	cout << " para salir.";
+	char input = _getch();
+	if (input == deniedKey)
+	{
+		SelectColor(Colors::White);
+		MoveCursor(0, 31);
 		cout << "                                                                         ";
-		MoverCursor(30, 5);
+		MoveCursor(0, 32);
 		cout << "                                                                         ";
-		MoverCursor(30, 4);
-		ElegirColor(Colores::Amarillo);
-		cout << "Gracias por Jugar,aprete cualquier tecla para volver al menu :)";
+		MoveCursor(0, 31);
+		SelectColor(Colors::Yellow);
+		cout << "Gracias por Jugar :)";
+		MoveCursor(0, 32);
+		cout << "Aprete cualquier tecla para volver al menu";
 		gameOver = false;
 		juegoCorriendo = false;
-		//menuController = MenuController::Menu;
-		ElegirColor(Colores::Blanco);
+		_getch();
+		SelectColor(Colors::White);
 	}
-	else if (input == negarTecla)
+	else if (input == acceptKey)
 	{
-		ElegirColor(Colores::Blanco);
-		MoverCursor(30, 4);
-		cout << "                                                                         ";
-		MoverCursor(30, 5);
-		cout << "                                                                         ";
+		SelectColor(Colors::White);
+		MoveCursor(0, 31);
+		cout << "                                                ";
+		MoveCursor(0, 32);
+		cout << "                                                         ";
 		return;
 	}
 	else
 	{
-		Continuar(gameOver,juegoCorriendo);
+		PauseMenu(gameOver, juegoCorriendo,acceptKey,deniedKey);
 	}
 
 }
-void InputManager(Pacman& pacman,bool& gameOver, bool& juegoCorriendo)
+void InputManager(Pacman& pacman, bool& gameOver, bool& gameRunning, char rightKey, char leftKey, char upKey, char downKey, char selectKey, char acceptKey, char deniedKey)
 {
 	char input = _getch();
-    if (input == arriba)
-    {
-        pacman.direccionActual = Direccion::Arriba;
-    } //Arriba  
-    else if (input == abajo)
-    {
-        pacman.direccionActual = Direccion::Abajo;
-    } //Abajo
-    else if (input == izquierda)
-    {
-        pacman.direccionActual = Direccion::Izquierda;
-    } //Izquierda
-    else if (input == derecha)
-    {
-        pacman.direccionActual = Direccion::Derecha;
-    } //Derecha
-    else if (input == seleccionar)
-    {
-		pacman.cocos = 228;
-    } //Seleccion
-    
-    else if (input == aceptarTecla)
-    {
-       Continuar(gameOver,juegoCorriendo);
-    }
-    else if (input == resetTecla)
-    {
-        //Reset();
-    }
-}
+	if (input == upKey)
+	{
+		pacman.currentDirection = Direction::Up;
+	} //Arriba  
+	else if (input == downKey)
+	{
+		pacman.currentDirection = Direction::Down;
+	} //Abajo
+	else if (input == leftKey)
+	{
+		pacman.currentDirection = Direction::Left;
+	} //Izquierda
+	else if (input == rightKey)
+	{
+		pacman.currentDirection = Direction::Right;
+	} //Derecha
+	else if (input == selectKey)
+	{
+		//pacman.pellets = 228;
+	} //Seleccion
 
+	else if (input == acceptKey || input == deniedKey)
+	{
+		PauseMenu(gameOver, gameRunning,acceptKey,deniedKey);
+	}
+	
+}
+void InputManager(GameStates& gameStates, int& cursor, char upKey, char downKey, char selectKey)
+{
+	char input = _getch();
+	if (cursor > (int)GameStates::Exit || cursor < (int)GameStates::Game)
+	{
+		cursor = (int)GameStates::Game;
+	}
+	if (input == upKey)
+	{
+		cursor--;
+		if (cursor < (int)GameStates::Game)
+		{
+			cursor = (int)GameStates::Exit;
+		}
+	} //Arriba  
+	else if (input == downKey)
+	{
+		cursor++;
+
+		if (cursor > (int)GameStates::Exit)
+		{
+			cursor = (int)GameStates::Game;
+		}
+	} //Abajo
+	else if (input == selectKey)
+	{
+		gameStates = (GameStates)cursor;
+	} //Seleccion
+
+}
+bool InputManager(int& cursor,char& upKey,char& downKey,char& selectKey)
+{
+	char input = _getch();
+	
+
+	if (input == upKey)
+	{
+		cursor--;
+		if (cursor < (int)Options::Up)
+		{
+			cursor = (int)Options::Menu;
+		}
+		return false;
+	} //Arriba  
+	else if (input == downKey)
+	{
+		cursor++;
+
+		if (cursor > (int)Options::Menu)
+		{
+			cursor = (int)Options::Up;
+		}
+		return false;
+	} //Abajo
+	else if (input == selectKey)
+	{
+		return true;
+	}
+	return false;
+}

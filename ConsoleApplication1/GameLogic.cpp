@@ -1,303 +1,261 @@
 #include "GameLogic.h"
+#include <chrono> 
+#include <thread>
+#include <conio.h>
+#include "SoundManager.h"
+using namespace std::literals;
 
-Grilla grilla;
+Grid grid;
 Pacman pacman;
-Fantasma fantasma[4]{ };
-int tiempo = 0;
-bool midAnimation = false;
-void FuenteDeConsola(int ancho, int alto)
+Ghost ghost[4]{ };
+
+
+
+void StartGame(bool& doContinue, int& time, bool& midAnimation, bool& gameRunning, int& ghostTime, bool& gameover, bool& pacmanDead, int& gameTimePacman, int& gameTimeGhost, bool& pacmanPower,bool audio)
 {
-	CONSOLE_FONT_INFOEX cfi;
-	cfi.cbSize = sizeof(cfi);
-	cfi.dwFontSize.X = 24;
-	cfi.dwFontSize.Y = 24;
-	cfi.nFont = 4;
-	cfi.FontFamily = FF_DONTCARE;
-
-	wcscpy_s(cfi.FaceName, L"Terminal"); // Choose your font
-	cfi.FontWeight = FW_NORMAL;
-
-	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
-}
-void RemoveScrollbarAndResize()
-{
-
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE); // Consigo una referencia al handle de salida
-	CONSOLE_SCREEN_BUFFER_INFO info; // Creo una variable de informacion del buffer de la pantalla
-	GetConsoleScreenBufferInfo(handle, &info); // Consigo el buffer actual de la pantalla de la GetStdHandle(STD_OUTPUT_HANDLE)
-
-	COORD new_size // Creo una variable que indica que el buffer actual de la pantalla es exactamente igual al tamaño de la pantalla + 1 pixel
+	pacmanPower = false;
+	midAnimation = false;
+	gameRunning = true;
+	ghostTime = 0;
+	gameover = false;
+	pacmanDead = true;
+	gameTimeGhost = gameTimeDefault;
+	gameTimePacman = gameTimeDefault;
+	StartGhost(ghost);
+	pacman.Start(doContinue);
+	if (doContinue)
 	{
-		info.srWindow.Right - info.srWindow.Left + 1,
-		info.srWindow.Bottom - info.srWindow.Top + 1
-	};
-
-	SetConsoleScreenBufferSize(handle, new_size); // Seteo mi nuevo tamaño de buffer con mi variable
-	HWND consoleWindow = GetConsoleWindow(); // Consigo una referencia a la ventana de la GetStdHandle(STD_OUTPUT_HANDLE)
-	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX); // Seteo el tamaño de la pantalla como el tamaño total incluyendo los bordes, por lo tanto tapo los eventos de resize
-
-}
-
-
-void TamañoYScroller()
-{
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO info;
-	GetConsoleScreenBufferInfo(handle, &info);
-
-	COORD new_size =
-	{
-		info.srWindow.Right - info.srWindow.Left + 1,
-		info.srWindow.Bottom - info.srWindow.Top + 1
-	};
-
-	SetConsoleScreenBufferSize(handle, new_size);
-	HWND consoleWindow = GetConsoleWindow();
-	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
-}
-
-void ResetAfterDead(Fantasma fantasma[], Pacman& pacman)
-{
-	pacman.ResetearPosicion();
-	for (int fantas = 0; fantas < maximoFantasmas; fantas++)
-	{
-		fantasma[fantas].ResetearPosicion(fantas);
-		fantasma[fantas].timerFantasma = clock() + (fantas * 5000);
+		pacman.Draw();
+		grid.Draw(pacman.x, pacman.y);
 	}
+	PlayStartSound(audio);
+	doContinue = false;
+	grid.Start(pacman.x, pacman.y, ghost);
+	time = 0;
+	Sleep(2800);
 }
-void ResetFantasmas(Fantasma fantasma[])
+void StartGhost(Ghost ghost[])
 {
-	for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+	for (int number = 0; number < maximunGhost; number++)
 	{
-		fantasma[fantas].Normalizar();
-	}
-
-}
-void SacarFantasmasDeLaCasa(Fantasma fantasma[], int tiempoActual)
-{
-	
-	for (int fantas = 0; fantas < maximoFantasmas; fantas++)
-	{
-		if (fantasma[fantas].SalirDeCasa(tiempoActual))
-		{
-
-
-			
-		}
-	}
-
-}
-void IniciarFantasmas(Fantasma fantasma[])
-{
-	for (int fantas = 0; fantas < maximoFantasmas; fantas++)
-	{
-		fantasma[fantas].ResetearPosicion(fantas);
-		switch (fantas)
+		ghost[number].ResetPosition(number);
+		switch (number)
 		{
 		case 0:
-			fantasma[fantas].colorDefault = Colores::Rojo;
-			fantasma[fantas].colorActual = fantasma[fantas].colorDefault;
+			ghost[number].DefaultColor = Colors::Red;
+			ghost[number].currentColor = ghost[number].DefaultColor;
 			break;
 		case 1:
-			fantasma[fantas].colorDefault = Colores::Verde;
-			fantasma[fantas].colorActual = fantasma[fantas].colorDefault;
+			ghost[number].DefaultColor = Colors::Green;
+			ghost[number].currentColor = ghost[number].DefaultColor;
 			break;
 		case 2:
-			fantasma[fantas].colorDefault = Colores::VioletaClaro;
-			fantasma[fantas].colorActual = fantasma[fantas].colorDefault;
+			ghost[number].DefaultColor = Colors::Purple;
+			ghost[number].currentColor = ghost[number].DefaultColor;
 			break;
 		case 3:
-			fantasma[fantas].colorDefault = Colores::Celeste;
-			fantasma[fantas].colorActual = fantasma[fantas].colorDefault;
+			ghost[number].DefaultColor = Colors::LightBlueSecondType;
+			ghost[number].currentColor = ghost[number].DefaultColor;
 			break;
 		}
-		fantasma[fantas].cuerpoActual = fantasma[fantas].cuerpo[0] ;
-		fantasma[fantas].timerFantasma = clock()+(fantas*5000);
+		ghost[number].currentBody = ghost[number].bodyPart[0];
+		ghost[number].jailTimer = clock() + (number * 5000);
 	}
-
 }
-
-void IniciarJuego(bool& continuar,int& tiempo, bool& midAnimation,bool& juegoCorriendo,int& timerFantasmal, int& timerCasa, bool& gameover, bool& murio)
+void ResetGhost(Ghost ghost[])
 {
-    midAnimation = false;
-	juegoCorriendo = true;
-	timerFantasmal =0;
-	timerCasa = clock();
-	gameover = false;
-	murio = true;
-	pacman.IniciarPacman(continuar);
-	if (continuar)
+	for (int fantas = 0; fantas < maximunGhost; fantas++)
 	{
-		pacman.DibujarPacMan();
-		grilla.Dibujar(pacman.x, pacman.y);
+		ghost[fantas].Normalize();
 	}
-	continuar = false;
-	grilla.Iniciar(pacman.x, pacman.y, fantasma);
-	IniciarFantasmas(fantasma);
-	tiempo = 0;
-	Sleep(500);
 }
-void Colisiones(Fantasma fantasma[], Pacman& pacman, Grilla& grilla, int& timerFantasma, bool& GameOver, bool& dead, bool& juegoCorriendo,int& GameTimeFantasma, int& GameTimePacman)
+void ResetAfterDead(Ghost ghost[], Pacman& pacman, bool& pacmanPower)
 {
-	if (pacman.CheckearTablero(grilla) == TipoDeBloque::Pildora)
+	pacman.ResetPosition();
+	pacmanPower = false;
+	for (int fantas = 0; fantas < maximunGhost; fantas++)
 	{
-		timerFantasma = clock();
-		for (int i = 0; i < maximoFantasmas; i++)
+		ghost[fantas].ResetPosition(fantas);
+		ghost[fantas].jailTimer = clock() + (fantas * 5000);
+	}
+}
+void Colisions(Ghost ghost[], Pacman& pacman, Grid& grid, int& ghostTime, bool& gameOver, bool& dead, bool& gameRunning, int& pacmanGameTime, bool& pacmanPower,bool audio)
+{
+	switch (pacman.CheckBoard(grid))
+	{
+	case BlockType::Pill:
+		PlayPillSound(audio);
+		ghostTime = clock();
+		for (int i = 0; i < maximunGhost; i++)
 		{
-			fantasma[i].Debilitar();
-
+			ghost[i].Weak();
 		}
-		GameTimeFantasma = GameTimeDefault - GametimePowerUp;
-		GameTimePacman = GameTimeDefault +(GametimePowerUp*2);
+		pacmanGameTime = gameTimeDefault - (gametimePowerUp * 2);
+		pacmanPower = true;
+		break;
+	case BlockType::Fruit:
+		PlayFruitSound(audio);
+		break;
 	}
-	int multiplicador =1;
-	for (int i = 0; i < maximoFantasmas; i++)
+	for (int i = 0; i < maximunGhost; i++)
 	{
-
-		if (pacman.x == fantasma[i].x && pacman.y == fantasma[i].y)
+		if (pacman.x == ghost[i].x && pacman.y == ghost[i].y)
 		{
-			if (fantasma[i].estado == EstadoFantasma::Debil)
+			if (ghost[i].state == GhostState::Weak)
 			{
-				multiplicador++;
-				pacman.DibujarPacMan();
-
-				fantasma[i].Encarcelar();
-				fantasma[i].timerFantasma = clock()+5000;
+				pacman.Draw();
+				PlayEatsGhostSound(audio);
+				ghost[i].Jail();
+				ghost[i].jailTimer = clock() + 5000;
 				Sleep(500);
-				pacman.puntuacion += 200*multiplicador;
+				pacman.score += 200;
 			}
-			else if (fantasma[i].estado == EstadoFantasma::Normal)
+			else if (ghost[i].state == GhostState::Normal)
 			{
-				pacman.SecuenciaMuerte(GameOver, dead, juegoCorriendo);
-				ResetAfterDead(fantasma, pacman);
-
-
+				PlayDeathSound(audio);
+				pacman.DeathSequence(gameOver, dead, gameRunning);
+				ResetAfterDead(ghost, pacman, pacmanPower);
 				Sleep(500);
-
 			}
 		}
 	}
 }
-
-void GameLogic()
+void GetGhostOut(Ghost ghost[], int currentTime)
 {
-	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
 
-	CONSOLE_CURSOR_INFO info;
-	info.dwSize = 100;
-	info.bVisible = FALSE;
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-	FuenteDeConsola(5, 5);
-	TamañoYScroller();
-	bool continuar = false;
+	for (int fantas = 0; fantas < maximunGhost; fantas++)
+	{
+		ghost[fantas].OutOfJail(currentTime);
+	}
+
+}
+void GameLogic(char rightKey, char leftKey, char upKey, char downKey, char selectKey, char acceptKey, char deniedKey,bool audio)
+{
+	bool doContinue = false;
 	bool midAnimation = false;
-	bool juegoCorriendo = true;
-	int frame = 150;
-	int timerFantasma;
-	int timerCasa = clock();
-	bool gameover = false;
-	bool murio = true;
-	int tiempo;
-	
-	int GameTimeFantasma = GameTimeDefault;
-	int GameTimePacman = GameTimeDefault;
-	IniciarJuego(continuar, tiempo, midAnimation, juegoCorriendo, timerFantasma, timerCasa, gameover, murio);
-	
-
-	while (juegoCorriendo)
+	bool gameRunning = true;
+	int ghostTimer;
+	int gameTime;
+	int soundTime = 12;
+	int ghostGameTime = gameTimeDefault;
+	int pacmanGameTime = gameTimeDefault;
+	bool gameOver = false;
+	bool pacmanDied = true;
+	bool pacmanPower = false;
+	StartGame(doContinue, gameTime, midAnimation, gameRunning, ghostTimer, gameOver, pacmanDied, pacmanGameTime, ghostGameTime, pacmanPower,audio);
+	while (gameRunning)
 	{
-
 		do
 		{
-			if (murio)
+			if (pacmanDied)
 			{
-				murio = false;
-				pacman.DibujarPacMan(midAnimation);
+				pacmanDied = false;
+				pacman.Draw(midAnimation);
 				Sleep(1500);
 			};
-			Colisiones(fantasma, pacman, grilla, timerFantasma, gameover, murio, juegoCorriendo, GameTimeFantasma, GameTimePacman);
-			int tiempoActual = clock();
+			Colisions(ghost, pacman, grid, ghostTimer, gameOver, pacmanDied, gameRunning, pacmanGameTime, pacmanPower, audio);
+			int currentTime = clock();
 
+			std::this_thread::sleep_for(1us);
 
-
-			if (tiempo % GameTimeFantasma == 0)
+			if (gameTime % pacmanGameTime == 0)
 			{
 
-				pacman.DibujarPuntuacion();
-				grilla.Dibujar(pacman.x, pacman.y, fantasma);
+				pacman.DrawScore();
+				grid.Draw(pacman.x, pacman.y, ghost);
 
-				grilla.Chekear();
-				pacman.DesDibujar();
-				Colisiones(fantasma, pacman, grilla, timerFantasma, gameover, murio, juegoCorriendo, GameTimeFantasma, GameTimePacman);
-				switch (pacman.direccionActual)
+				grid.Check();
+				pacman.Erase();
+				Colisions(ghost, pacman, grid, ghostTimer, gameOver, pacmanDied, gameRunning, pacmanGameTime, pacmanPower,audio);
+				switch (pacman.currentDirection)
 				{
-				case Direccion::Arriba:
-					pacman.MoverArriba(grilla, frame);
+				case Direction::Up:
+					pacman.MoveUp(grid);
 					break;
-				case Direccion::Abajo:
-					pacman.MoverAbajo(grilla, frame);
+				case Direction::Down:
+					pacman.MoveDown(grid);
 					break;
-				case Direccion::Derecha:
-					pacman.MoverDerecha(grilla, frame);
+				case Direction::Right:
+					pacman.MoveRight(grid);
 					break;
-				case Direccion::Izquierda:
-					pacman.MoverIzquierda(grilla, frame);
+				case Direction::Left:
+					pacman.MoveLeft(grid);
 					break;
 				}
-				Colisiones(fantasma, pacman, grilla, timerFantasma, gameover, murio, juegoCorriendo, GameTimeFantasma, GameTimePacman);
-				pacman.DesDibujar();
-				pacman.DibujarPacMan(midAnimation);
+				Colisions(ghost, pacman, grid, ghostTimer, gameOver, pacmanDied, gameRunning, pacmanGameTime, pacmanPower, audio);
+				pacman.Erase();
+				pacman.Draw(midAnimation);
 
 			}
-			if (tiempo % GameTimePacman == 0)
+			if (gameTime % soundTime == 0)
 			{
-				for (int fantas = 0; fantas < maximoFantasmas; fantas++)
+				if (!pacmanPower)
 				{
-					if (fantasma[fantas].estado == EstadoFantasma::Encerrado)
+					PlayWakaSound(audio);
+				}
+				else
+				{
+					if (midAnimation)
 					{
-						grilla.MoverFantasmaEncerrado(fantasma[fantas]);
+						PlayWakaPillSound(audio);
 					}
 					else
 					{
-						grilla.MoverFantasma(fantasma[fantas]);
+						PlayWakaPill2Sound(audio);
 					}
-					grilla.DibujarFantasma(fantasma[fantas]);
 				}
-
-				Colisiones(fantasma, pacman, grilla, timerFantasma, gameover, murio, juegoCorriendo, GameTimeFantasma, GameTimePacman);
-				grilla.Dibujar(pacman.x, pacman.y, fantasma);
 			}
-
-			tiempo++;
-			if (tiempo == 400000)
+			if (gameTime % ghostGameTime == 0)
 			{
-				tiempo = 0;
+				for (int fantas = 0; fantas < maximunGhost; fantas++)
+				{
+					if (ghost[fantas].state == GhostState::Jail)
+					{
+						grid.MoveJailGhost(ghost[fantas]);
+					}
+					else
+					{
+						grid.MoveGhost(ghost[fantas]);
+					}
+					grid.DrawGhost(ghost[fantas]);
+				}
+				Colisions(ghost, pacman, grid, ghostTimer, gameOver, pacmanDied, gameRunning, pacmanGameTime, pacmanPower, audio);
+				if (gameRunning && !gameOver)
+				{
+					grid.Draw(pacman.x, pacman.y, ghost);
+				}
 			}
-			if ((tiempoActual - timerFantasma) / 1000 == 10)
+			gameTime++;
+			if (gameTime == 400000)
 			{
-
-				ResetFantasmas(fantasma);
-				timerFantasma = 0;
-				GameTimeFantasma = GameTimeDefault;
-				GameTimePacman = GameTimeDefault;
-				
+				gameTime = 0;
 			}
-			SacarFantasmasDeLaCasa(fantasma, tiempoActual);
-			if (pacman.Ganar(gameover,continuar))
+			if ((currentTime - ghostTimer) / 1000 == 10)
 			{
-				grilla.Chekear();
-				grilla.Dibujar(pacman.x, pacman.y, fantasma);
-
-				IniciarJuego(continuar, tiempo, midAnimation, juegoCorriendo, timerFantasma, timerCasa, gameover, murio);
+				ResetGhost(ghost);
+				ghostTimer = 0;
+				ghostGameTime = gameTimeDefault;
+				pacmanGameTime = gameTimeDefault;
+				pacmanPower = false;
 			}
-		} while (!_kbhit() && !gameover);
-		if (!gameover)
+			GetGhostOut(ghost, currentTime);
+			if (pacman.Win(gameOver, doContinue))
+			{
+				grid.Check();
+				grid.Draw(pacman.x, pacman.y, ghost);
+				StartGame(doContinue, gameTime, midAnimation, gameRunning, ghostTimer, gameOver, pacmanDied, pacmanGameTime, ghostGameTime, pacmanPower,audio);
+			}
+		} while (!_kbhit() && !gameOver && gameRunning);
+		if (!gameOver)
 		{
-
-			pacman.GuardarDireccionAnterior();
-			InputManager(pacman, gameover, juegoCorriendo);
+			pacman.GetPreviousDirection();
+			InputManager(pacman, gameOver, gameRunning, rightKey, leftKey, upKey, downKey, selectKey, acceptKey, deniedKey);
 			pacman.SetBuffer();
-			Colisiones(fantasma, pacman, grilla, timerFantasma, gameover, murio, juegoCorriendo, GameTimeFantasma, GameTimePacman);
+			Colisions(ghost, pacman, grid, ghostTimer, gameOver, pacmanDied, gameRunning, pacmanGameTime, pacmanPower, audio);
+		}
+		else
+		{
+			Sleep(500);
 		}
 
 	};

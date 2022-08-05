@@ -1,160 +1,133 @@
 #include "PacMan.h"
-#include "Globales.h"
-#include "Fantasma.h"
+#include "Globals.h"
+#include "Ghost.h"
 
 
-void Pacman::MoverAbajo(Grilla grilla, int& frames)
+void Pacman::MoveDown(Grid grid)
 {
-	if (grilla.tablero[y + 1][x] != TipoDeBloque::Dibujo)
+	if (grid.map[y + 1][x] != BlockType::Draw)
 	{
 
 		y++;
-		GuardarDireccionAnterior();
-		if (direccionBuffer != direccionActual)
+		GetPreviousDirection();
+		if (bufferDirection != currentDirection)
 		{
 			GetBuffer();
-			frames = 125;
+
 		}
-		else
-		{
-			frames = 150;
-		}
+
 	}
 	else
 	{
-		frames = 150;
-			SettearDireccionAnterior();
+
+			SetPreviousDirection();
 
 		
 	}
 
 }
-void Pacman::MoverArriba(Grilla grilla, int& frames)
+void Pacman::MoveUp(Grid grid)
 {
 
-	if (grilla.tablero[y - 1][x] != TipoDeBloque::Dibujo)
+	if (grid.map[y - 1][x] != BlockType::Draw)
 	{
 
 		y--;
-		GuardarDireccionAnterior();
-		if (direccionBuffer != direccionActual)
+		GetPreviousDirection();
+		if (bufferDirection != currentDirection)
 		{
 			GetBuffer();
-			frames = 125;
+		
 		}
-		else
-		{
-			frames = 150;
-		}
+	
 	}
 	else
 	{
-		frames = 150;
-			SettearDireccionAnterior();
-
+			SetPreviousDirection();
 	}
 
 }
-void Pacman::MoverDerecha(Grilla grilla, int& frames)
+void Pacman::MoveRight(Grid grid)
 {
 
 	
-    if (x >= columnas - 1)
+    if (x >= columns - 1)
 	{
 		x = 0;
 	}
-	else if (grilla.tablero[y][x + 1] != TipoDeBloque::Dibujo)
+	else if (grid.map[y][x + 1] != BlockType::Draw)
 	{
-		frames = 150;
 		x++;
-		GuardarDireccionAnterior();
-		if (direccionBuffer != direccionActual)
+		GetPreviousDirection();
+		if (bufferDirection != currentDirection)
 		{
 			GetBuffer();
-			frames = 125;
-		}
-		else
-		{
-			frames = 150;
 		}
 	}
 	else
 	{
-		SettearDireccionAnterior();
-		frames = 150;
+		SetPreviousDirection();
 	}
 
 }
-void Pacman::MoverIzquierda(Grilla grilla, int& frames)
+void Pacman::MoveLeft(Grid grid)
 {
-
-	
 	if (x <= 0)
 	{
-		x = columnas - 1;
-
+		x = columns - 1;
 	}
-	else if (grilla.tablero[y][x - 1] != TipoDeBloque::Dibujo)
+	else if (grid.map[y][x - 1] != BlockType::Draw)
 	{
 		x--;
-		GuardarDireccionAnterior();
+		GetPreviousDirection();
 		
-		if (direccionBuffer != direccionActual)
+		if (bufferDirection != currentDirection)
 		{
 			GetBuffer();
-			frames = 125;
-		}
-		else
-		{
-			frames = 150;
-		}
+		}	
 	}
 	else
 	{
-			SettearDireccionAnterior();
-			frames = 150;
+			SetPreviousDirection();
 	}
 }
-void Pacman::IniciarPacman(bool continuar)
+void Pacman::Start(bool continuar)
 {
-	cuerpoActual = cuerpo[(int)Direccion::Derecha];
-	Direccion direccionActual = Direccion::Derecha;
-	Direccion direccionAnterior = direccionActual;
-	Direccion direccionBuffer = direccionActual;
+	currentBody = bodyPart[(int)Direction::Right];
+	Direction direccionActual = Direction::Right;
+	Direction direccionAnterior = direccionActual;
+	Direction direccionBuffer = direccionActual;
 	x = xDefault;
 	y = yDefault;
 	if (!continuar)
 	{
-	vidas = vidasMax;
-	puntuacion =  0 ;
+	lifes = maxLifes;
+	score =  0 ;
 	}
-	cocos =  0 ;
-	DibujarVidas();
-	DibujarPuntuacion();
-	
+	pellets =  0 ;
+	DrawLifes();
+	DrawScore();	
 }
-void Pacman::DibujarPacMan(bool& aux)
+void Pacman::Draw(bool& aux)
 {
-	if (estado == EstadoPacMan::Normal)
-	{
-			MoverCursor(x, y);
-			ElegirColor(Colores::Amarillo);
+	
+		MoveCursor(x, y);
+		SelectColor(Colors::Yellow);
 		if (!aux)
 		{
-
-			switch (direccionAnterior)
+			switch (previousDirection)
 			{
-			case Direccion::Izquierda:
-				cuerpoActual = cuerpo[(int)Direccion::Izquierda];
+			case Direction::Left:
+				currentBody = bodyPart[(int)Direction::Left];
 				break;
-			case Direccion::Derecha:
-				cuerpoActual = cuerpo[(int)Direccion::Derecha];
+			case Direction::Right:
+				currentBody = bodyPart[(int)Direction::Right];
 				break;
-			case Direccion::Arriba:
-				cuerpoActual = cuerpo[(int)Direccion::Arriba];
+			case Direction::Up:
+				currentBody = bodyPart[(int)Direction::Up];
 				break;
-			case Direccion::Abajo:
-				cuerpoActual = cuerpo[(int)Direccion::Abajo];
+			case Direction::Down:
+				currentBody = bodyPart[(int)Direction::Down];
 				break;
 			}
 			aux = true;
@@ -162,104 +135,95 @@ void Pacman::DibujarPacMan(bool& aux)
 
 		else if (aux)
 		{
-			switch (direccionAnterior)
+			switch (previousDirection)
 			{
-			case Direccion::Derecha:
-			case Direccion::Izquierda:
-			cuerpoActual = cuerpo[4];
+			case Direction::Right:
+			case Direction::Left:
+			currentBody = bodyPart[4];
 
 				break;
-			case Direccion::Arriba:
-			case Direccion::Abajo:
-				cuerpoActual = cuerpo[5];
+			case Direction::Up:
+			case Direction::Down:
+				currentBody = bodyPart[5];
 				break;
 			}
 			aux = false;
 		}
-		cout << cuerpoActual;
-
-	}
+		cout << currentBody;
+	
 }
-void Pacman::DibujarPacMan()
+void Pacman::Draw()
 {
-	if (estado == EstadoPacMan::Normal)
-	{
-		MoverCursor(x, y);
-		ElegirColor(Colores::Amarillo);
-		
-
-			switch (direccionAnterior)
+	
+		MoveCursor(x, y);
+		SelectColor(Colors::Yellow);
+			switch (previousDirection)
 			{
-			case Direccion::Izquierda:
-				cuerpoActual = cuerpo[(int)Direccion::Izquierda];
+			case Direction::Left:
+				currentBody = bodyPart[(int)Direction::Left];
 				break;
-			case Direccion::Derecha:
-				cuerpoActual = cuerpo[(int)Direccion::Derecha];
+			case Direction::Right:
+				currentBody = bodyPart[(int)Direction::Right];
 				break;
-			case Direccion::Arriba:
-				cuerpoActual = cuerpo[(int)Direccion::Arriba];
+			case Direction::Up:
+				currentBody = bodyPart[(int)Direction::Up];
 				break;
-			case Direccion::Abajo:
-				cuerpoActual = cuerpo[(int)Direccion::Abajo];
+			case Direction::Down:
+				currentBody = bodyPart[(int)Direction::Down];
 				break;
 			}
-		cout << cuerpoActual;
-
-	}
+		cout << currentBody;
+	
 }
-void Pacman::DesDibujar()
+void Pacman::Erase()
 {
-	MoverCursor(x, y);
-	ElegirColor(Colores::Blanco);
+	MoveCursor(x, y);
+	SelectColor(Colors::White);
 	cout << spa;
 }
-TipoDeBloque Pacman::CheckearTablero(Grilla& grilla)
+BlockType Pacman::CheckBoard(Grid& grid)
 {
-	TipoDeBloque impactado;
-	impactado = grilla.tablero[y][x];
+	BlockType impactado;
+	impactado = grid.map[y][x];
 	switch (impactado)
 	{
-	case TipoDeBloque::Vacio:
-		
+	case BlockType::Null:
 		break;
-	case TipoDeBloque::Cocos:
-		puntuacion+= 10;
-		cocos++;
-		grilla.tablero[y][x] = TipoDeBloque::Vacio;
+	case BlockType::Pellets:
+		score+= 10;
+		pellets++;
+		grid.map[y][x] = BlockType::Null;
 		break;
-	case TipoDeBloque::Pildora:
-		puntuacion += 100;
-		cocos++;
-		
-		grilla.tablero[y][x] = TipoDeBloque::Vacio;
-	
+	case BlockType::Pill:
+		score += 100;
+		pellets++;
+		grid.map[y][x] = BlockType::Null;
 		break;
-	case TipoDeBloque::Fruta:
-		puntuacion += 1000;
-		grilla.tablero[y][x] = TipoDeBloque::Vacio;
+	case BlockType::Fruit:
+		score += 1000;
+		grid.map[y][x] = BlockType::Null;
 		break;
 	}
 	return impactado;
 }
-void Pacman::SecuenciaMuerte(bool& GameOver, bool& die, bool& juegoCorriendo)
+void Pacman::DeathSequence(bool& GameOver, bool& die, bool& juegoCorriendo)
 {
-	AnimacionMuerte();
-	vidas--;
+	DeathAnimation();
+	lifes--;
 	die = true;
-	if (vidas <= 0)
+	if (lifes <= 0)
 	{
 		GameOver = true;
 		juegoCorriendo = false;
-		MoverCursor(9, 15);
-		ElegirColor(Colores::Rojo);
+		MoveCursor(9, 15);
+		SelectColor(Colors::Red);
 		std::cout << "GAME  OVER";
-		MoverCursor(30, 30);
 	}
-	DibujarVidas();
+	DrawLifes();
 }
-bool Pacman::Ganar(bool& GameOver,bool& continuar)
+bool Pacman::Win(bool& GameOver,bool& continuar)
 {
-	if (cocos == puntosGanar)
+	if (pellets == pelletsToWin)
 	{
 		GameOver = true;
 		continuar = true;
@@ -267,79 +231,78 @@ bool Pacman::Ganar(bool& GameOver,bool& continuar)
 	}
 	return false;
 }
-void Pacman::GuardarDireccionAnterior()
+void Pacman::GetPreviousDirection()
 {
-	direccionAnterior = direccionActual;
+	previousDirection = currentDirection;
 }
-void Pacman::SettearDireccionAnterior()
+void Pacman::SetPreviousDirection()
 {
-	 direccionActual = direccionAnterior;
+	 currentDirection = previousDirection;
 }
 void Pacman::SetBuffer() 
 {
-	direccionBuffer = direccionActual;
+	bufferDirection = currentDirection;
 }
 void Pacman::GetBuffer()
 {
-	direccionActual=direccionBuffer;
+	currentDirection=bufferDirection;
 }
-void Pacman::ResetearPosicion()
+void Pacman::ResetPosition()
 {
 	x = xDefault;
 	y = yDefault;
-	direccionActual = Direccion::Derecha;
+	currentDirection = Direction::Right;
 }
-void Pacman::DibujarPuntuacion()
+void Pacman::DrawScore()
 {
-	MoverCursor(30, 0);
-	ElegirColor(Colores::Blanco);
+	MoveCursor(0, 30);
+	SelectColor(Colors::White);
 	std::cout << "Puntuacion:";
-	MoverCursor(42, 0);
+	MoveCursor(12, 30);
 	for (int i = 0; i < 30; i++)
 	{
 		std::cout << spa;
 	}
-	MoverCursor(42, 0);
-	std::cout << puntuacion;
+	MoveCursor(12, 30);
+	std::cout << score;
 }
-void Pacman::AnimacionMuerte()
+void Pacman::DeathAnimation()
 {
-	DibujarPacMan();
-	direccionActual = Direccion::Mid;
-	MoverCursor(x, y);
+	Draw();
+	currentDirection = Direction::Mid;
+	MoveCursor(x, y);
 	Sleep(500);
-	if (direccionAnterior ==Direccion::Arriba || direccionAnterior == Direccion::Abajo)
+	if (previousDirection ==Direction::Up || previousDirection == Direction::Down)
 	{
-		std::cout << cuerpo[5];
+		std::cout << bodyPart[5];
 	}
 	else
 	{
-		std::cout << cuerpo[4];
+		std::cout << bodyPart[4];
 	}
 	Sleep(500);
-	MoverCursor(x, y);
-	std::cout << cuerpo[6];
+	MoveCursor(x, y);
+	std::cout << bodyPart[6];
 	Sleep(500);
-	MoverCursor(x, y);
+	MoveCursor(x, y);
 	std::cout << spa;
 	Sleep(500);
 }
-void Pacman::DibujarVidas()
+void Pacman::DrawLifes()
 {
-	MoverCursor(30, 1);
-	ElegirColor(Colores::Blanco);
+	MoveCursor(0, 29);
+	SelectColor(Colors::White);
 	for (int i = 0; i < 30; i++)
 	{
 		std::cout << spa;
 	}
-	MoverCursor(30, 1);
-	ElegirColor(Colores::Blanco);
+	MoveCursor(0, 29);	
+	SelectColor(Colors::White);
 	std::cout << "Vidas:";
-	ElegirColor(Colores::Amarillo);
-	for (int i = 0; i < vidas; i++)
+	SelectColor(Colors::Yellow);
+	for (int i = 0; i < lifes; i++)
 	{
-	std::cout << cuerpo[(int)Direccion::Derecha];
-
+		std::cout << bodyPart[(int)Direction::Right];
 	}
 }
 
